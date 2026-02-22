@@ -1,0 +1,547 @@
+/* WidgetChat Mobile Responsive Styles */
+
+/* Base positioning and z-index - Tăng z-index để hiển thị trên cùng */
+.chat-widget-container {
+  z-index: 99999 !important;
+}
+
+.chat-widget-icon {
+  z-index: 99999 !important;
+}
+
+/* Quick Actions Styles */
+.quick-actions {
+  display: flex !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+  flex-wrap: wrap !important;
+}
+
+.quick-action-button {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 16px !important;
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  transition: all 0.2s ease !important;
+}
+
+.quick-action-button:hover {
+  background-color: #e5e7eb !important;
+  border-color: #9ca3af !important;
+  transform: translateY(-1px) !important;
+}
+
+.quick-action-button:active {
+  transform: translateY(0) !important;
+}
+
+/* Product Card Styles */
+.product-card {
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  margin-top: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.product-card:hover {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.product-card:active {
+  transform: translateY(0) !important;
+}
+
+/* Post Card Styles */
+.post-card {
+  background-color: #fef7ff !important;
+  border: 1px solid #f3e8ff !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  margin-top: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.post-card:hover {
+  background-color: #faf5ff !important;
+  border-color: #e9d5ff !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1) !important;
+}
+
+.post-card:active {
+  transform: translateY(0) !important;
+}
+
+/* Mobile positioning improvements */
+@media (max-width: 768px) {
+  .chat-widget-container {
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 99999 !important;
+  }
+  
+  .chat-widget-icon {
+    width: 56px !important;
+    height: 56px !important;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3) !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .chat-widget-icon:hover {
+    transform: scale(1.05) !important;
+  }
+  
+  .chat-widget-icon:active {
+    transform: scale(0.95) !important;
+  }
+
+  .quick-actions {
+    gap: 6px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .quick-action-button {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .product-card,
+  .post-card {
+    padding: 10px !important;
+    margin-top: 6px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-widget-container {
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+  
+  .chat-widget-icon {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .quick-actions {
+    gap: 4px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .quick-action-button {
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 320px) {
+  .chat-widget-container {
+    bottom: 12px !important;
+    right: 12px !important;
+  }
+  
+  .chat-widget-icon {
+    width: 48px !important;
+    height: 48px !important;
+  }
+}
+
+/* Mobile chat container improvements - Tăng z-index cho chat container */
+@media (max-width: 768px) {
+  .chat-container {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    z-index: 999999 !important;
+  }
+  
+  .chat-header {
+    padding: 12px 16px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  .chat-header-title {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+  }
+  
+  .chat-close-button {
+    padding: 8px !important;
+    border-radius: 50% !important;
+    transition: background-color 0.2s ease !important;
+  }
+  
+  .chat-close-button:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  .chat-messages-container {
+    padding: 12px !important;
+    flex: 1 !important;
+    overflow-y: auto !important;
+    scroll-behavior: smooth !important;
+  }
+  
+  .chat-message-bubble {
+    max-width: 90% !important;
+    padding: 10px 14px !important;
+    font-size: 15px !important;
+    border-radius: 16px !important;
+    word-wrap: break-word !important;
+  }
+  
+  .chat-user-bubble {
+    background-color: #2563eb !important;
+    color: white !important;
+    border-top-right-radius: 4px !important;
+  }
+  
+  .chat-bot-bubble {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+    border-top-left-radius: 4px !important;
+    border: 1px solid #e5e7eb !important;
+  }
+  
+  .chat-icon-container {
+    margin-right: 8px !important;
+    margin-top: 2px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .chat-input-area {
+    padding: 12px !important;
+    border-top: 1px solid #e5e7eb !important;
+    background-color: white !important;
+  }
+  
+  .chat-input-container {
+    border-radius: 20px !important;
+    border: 1px solid #d1d5db !important;
+    background-color: #f9fafb !important;
+    transition: border-color 0.2s ease !important;
+    overflow: hidden !important;
+  }
+  
+  .chat-input {
+    padding: 10px 14px !important;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    border: none !important;
+    outline: none !important;
+    background-color: transparent !important;
+    flex: 1 !important;
+  }
+  
+  .chat-send-button {
+    padding: 10px 14px !important;
+    background-color: #2563eb !important;
+    color: white !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background-color 0.2s ease !important;
+  }
+  
+  .chat-send-button:hover {
+    background-color: #1d4ed8 !important;
+  }
+  
+  .chat-login-message {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
+    padding: 20px !important;
+    text-align: center !important;
+    background-color: #f9fafb !important;
+  }
+  
+  .chat-login-title {
+    margin-top: 16px !important;
+    color: #1f2937 !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+  }
+  
+  .chat-login-description {
+    color: #6b7280 !important;
+    margin: 8px 0 !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+  
+  .chat-login-button {
+    background-color: #2563eb !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 20px !important;
+    margin-top: 16px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: background-color 0.2s ease !important;
+  }
+  
+  .chat-login-button:hover {
+    background-color: #1d4ed8 !important;
+  }
+}
+
+/* Desktop chat container - Tăng z-index cho desktop */
+.chat-container {
+  z-index: 999999 !important;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .chat-container {
+    background-color: #1f2937 !important;
+    border-color: #374151 !important;
+  }
+  
+  .chat-messages-container {
+    background-color: #111827 !important;
+  }
+  
+  .chat-input-container {
+    background-color: #374151 !important;
+    border-color: #4b5563 !important;
+  }
+  
+  .chat-input {
+    background-color: transparent !important;
+    color: #f9fafb !important;
+  }
+  
+  .chat-bot-bubble {
+    background-color: #374151 !important;
+    color: #f9fafb !important;
+    border-color: #4b5563 !important;
+  }
+  
+  .chat-login-message {
+    background-color: #111827 !important;
+  }
+  
+  .chat-login-title {
+    color: #f9fafb !important;
+  }
+  
+  .chat-login-description {
+    color: #d1d5db !important;
+  }
+
+  .quick-action-button {
+    background-color: #374151 !important;
+    color: #f9fafb !important;
+    border-color: #4b5563 !important;
+  }
+
+  .quick-action-button:hover {
+    background-color: #4b5563 !important;
+    border-color: #6b7280 !important;
+  }
+
+  .product-card {
+    background-color: #374151 !important;
+    border-color: #4b5563 !important;
+    color: #f9fafb !important;
+  }
+
+  .product-card:hover {
+    background-color: #4b5563 !important;
+    border-color: #6b7280 !important;
+  }
+
+  .post-card {
+    background-color: #581c87 !important;
+    border-color: #7c3aed !important;
+    color: #f9fafb !important;
+  }
+
+  .post-card:hover {
+    background-color: #6d28d9 !important;
+    border-color: #8b5cf6 !important;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (max-width: 768px) {
+  .chat-widget-icon,
+  .chat-close-button,
+  .chat-send-button,
+  .chat-login-button,
+  .quick-action-button,
+  .product-card,
+  .post-card {
+    transition: all 0.2s ease !important;
+  }
+  
+  .chat-widget-icon:active,
+  .chat-close-button:active,
+  .chat-send-button:active,
+  .chat-login-button:active,
+  .quick-action-button:active,
+  .product-card:active,
+  .post-card:active {
+    transform: scale(0.95) !important;
+  }
+  
+  .chat-input-container:focus-within {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1) !important;
+  }
+}
+
+/* Accessibility improvements */
+@media (max-width: 768px) {
+  .chat-widget-icon:focus,
+  .chat-close-button:focus,
+  .chat-send-button:focus,
+  .chat-login-button:focus,
+  .quick-action-button:focus,
+  .product-card:focus,
+  .post-card:focus {
+    outline: 2px solid #2563eb !important;
+    outline-offset: 2px !important;
+  }
+  
+  .chat-input:focus {
+    outline: none !important;
+  }
+}
+
+/* Animation improvements */
+@keyframes chatSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes quickActionSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .chat-container {
+    animation: chatSlideIn 0.3s ease-out;
+  }
+
+  .quick-actions {
+    animation: quickActionSlideIn 0.4s ease-out;
+  }
+}
+
+/* Loading animation for typing indicator */
+@keyframes chatTyping {
+  0%, 60%, 100% {
+    opacity: 0.4;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+
+.chat-typing-text {
+  animation: chatTyping 1.4s infinite;
+}
+
+/* Scrollbar styling for mobile */
+@media (max-width: 768px) {
+  .chat-messages-container::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .chat-messages-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .chat-messages-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+  }
+  
+  .chat-messages-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Product and Post card text styles */
+.product-card .product-name {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: #1e293b !important;
+  margin-bottom: 4px !important;
+}
+
+.product-card .product-info {
+  font-size: 12px !important;
+  color: #64748b !important;
+}
+
+.post-card .post-title {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: #581c87 !important;
+  margin-bottom: 4px !important;
+}
+
+.post-card .post-category {
+  font-size: 12px !important;
+  color: #a855f7 !important;
+}
+
+/* Dark mode text colors for cards */
+@media (prefers-color-scheme: dark) {
+  .product-card .product-name {
+    color: #f9fafb !important;
+  }
+
+  .product-card .product-info {
+    color: #d1d5db !important;
+  }
+
+  .post-card .post-title {
+    color: #f9fafb !important;
+  }
+
+  .post-card .post-category {
+    color: #c4b5fd !important;
+  }
+} 

@@ -1,0 +1,168 @@
+/* ===== SHOP GLOBAL STYLES ===== */
+/* Import font Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+body, .content-wrapper {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== SHOP SECTION CARD ===== */
+.shop-section-wrap {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+  margin: 12px 0;
+  overflow: hidden;
+}
+
+.shop-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid #f0f2f5;
+  background: #fff;
+}
+
+.shop-section-head .title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shop-section-head .accent-bar {
+  width: 3px;
+  height: 20px;
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+
+.shop-section-head h5 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.1px;
+}
+
+.shop-section-head .badge-hot {
+  display: inline-block;
+  background: #0d6efd;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 99px;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+  margin-left: 6px;
+  text-transform: uppercase;
+}
+
+.shop-section-head .badge-new {
+  display: inline-block;
+  background: #10b981;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 99px;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+  margin-left: 6px;
+  text-transform: uppercase;
+}
+
+.shop-section-head .see-all {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transition: color 0.15s;
+  cursor: pointer;
+}
+
+.shop-section-head .see-all:hover {
+  color: #0d6efd;
+}
+
+.shop-section-body {
+  padding: 16px 20px 20px;
+}
+
+/* ===== CATEGORY BAR ===== */
+.cat-bar-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 1100px) { .cat-bar-grid { grid-template-columns: repeat(5, 1fr); } }
+@media (max-width: 576px)  { .cat-bar-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.cat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+  border: 1.5px solid transparent;
+  user-select: none;
+}
+
+.cat-item:hover {
+  background: #f8faff;
+  transform: translateY(-2px);
+  border-color: #e0e7ff;
+}
+
+.cat-icon-wrap {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+
+.cat-item:hover .cat-icon-wrap {
+  transform: scale(1.08);
+}
+
+.cat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+  text-align: center;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+/* ===== FLASH SALE BLUE ===== */
+.flash-header {
+  background: linear-gradient(135deg, #1d4ed8, #0284c7) !important;
+}
+
+/* ===== HOME PAGE LAYOUT ===== */
+.home-main-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+/* Remove generic py-5 padding from carousels */
+.shop-section-wrap .py-5 {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}

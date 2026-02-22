@@ -1,0 +1,132 @@
+.App {
+  text-align: center;
+}
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Sticky Header Styles - Override all conflicting styles */
+.sticky-top {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1020 !important;
+}
+
+/* Ensure header stays on top */
+header.sticky-top {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1030 !important;
+  background: white !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Content wrapper để đẩy content xuống khỏi header fixed */
+.content-wrapper {
+  padding-top: 120px !important;
+}
+
+/* Responsive padding cho mobile */
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding-top: 100px !important;
+  }
+}
+
+/* Override any CSS variables that might interfere */
+:root {
+  --header-height: auto !important;
+  --header-height-min: auto !important;
+}
+
+/* Fix for any potential body/html issues */
+html,
+body {
+  scroll-behavior: smooth;
+  overflow-x: visible !important;
+}
+
+/* Ensure proper stacking context */
+.container-fluid {
+  position: relative;
+}
+
+/* Fix for dropdown menus in sticky header */
+.dropdown-menu {
+  z-index: 1040 !important;
+}
+
+/* Ensure search suggestions appear above other elements */
+.position-absolute {
+  z-index: 1050 !important;
+}
+
+/* Override any conflicting position styles */
+header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1030 !important;
+}
+
+/* Ensure the main container doesn't interfere */
+.App {
+  position: relative;
+  overflow-x: visible !important;
+}
+
+/* Fix for any potential transform issues */
+header * {
+  transform: none !important;
+}
+
+/* Ensure proper viewport */
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.description-textarea {
+  font-family: inherit !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+}
+
+.time-new-roman-font {
+  font-family: "Times New Roman", Times, serif !important;
+}
+
+

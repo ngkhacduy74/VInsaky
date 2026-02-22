@@ -1,0 +1,200 @@
+/* Admin Modal Styles - Đảm bảo tất cả modal có background overlay đẹp */
+
+/* Modal Backdrop */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(4px);
+  opacity: 1 !important;
+}
+
+.modal-backdrop.show {
+  opacity: 1 !important;
+}
+
+/* Modal Container */
+.modal {
+  z-index: 1050 !important;
+}
+
+.modal-dialog {
+  z-index: 1051 !important;
+}
+
+/* Modal Content */
+.modal-content {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  overflow: hidden;
+}
+
+/* Modal Header */
+.modal-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 12px 12px 0 0;
+  padding: 1.5rem;
+}
+
+.modal-title {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 1.25rem;
+}
+
+.modal-header .btn-close {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.modal-header .btn-close:hover {
+  background: rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
+}
+
+/* Modal Body */
+.modal-body {
+  padding: 1.5rem;
+  background: white;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Modal Footer */
+.modal-footer {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  border-radius: 0 0 12px 12px;
+  padding: 1.5rem;
+}
+
+/* Modal Buttons */
+.modal-footer .btn {
+  border-radius: 8px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.modal-footer .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Animation cho modal */
+.modal.fade .modal-dialog {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  transform: translate(0, -50px) scale(0.95);
+  opacity: 0;
+}
+
+.modal.show .modal-dialog {
+  transform: translate(0, 0) scale(1);
+  opacity: 1;
+}
+
+/* Responsive modal */
+@media (max-width: 768px) {
+  .modal-dialog {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+  
+  .modal-content {
+    border-radius: 8px;
+  }
+  
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1rem;
+  }
+  
+  .modal-title {
+    font-size: 1.1rem;
+  }
+}
+
+/* Custom modal sizes */
+.modal-xl .modal-dialog {
+  max-width: 1140px;
+}
+
+.modal-lg .modal-dialog {
+  max-width: 800px;
+}
+
+.modal-sm .modal-dialog {
+  max-width: 400px;
+}
+
+/* Loading states trong modal */
+.modal-body .spinner-border {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Form elements trong modal */
+.modal-body .form-control {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.modal-body .form-control:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Alert trong modal */
+.modal-body .alert {
+  border-radius: 8px;
+  border: none;
+}
+
+/* Table trong modal */
+.modal-body .table {
+  margin-bottom: 0;
+}
+
+.modal-body .table th {
+  background: #f8fafc;
+  border-top: none;
+  font-weight: 600;
+}
+
+/* Image modal specific styles */
+.image-modal {
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(8px);
+}
+
+.image-modal .modal-content {
+  background: transparent;
+  box-shadow: none;
+}
+
+.image-modal .modal-body {
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Toast notifications trong modal */
+.toast-container {
+  z-index: 1060 !important;
+}
+
+/* Override Bootstrap default modal styles */
+.modal-backdrop.fade {
+  opacity: 0;
+}
+
+.modal-backdrop.show {
+  opacity: 1;
+} 
