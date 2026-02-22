@@ -13,6 +13,7 @@ import {
 } from "../utils/cartUtils";
 import { useAuth } from "../hooks/useAuth";
 import { authApiClient } from "../Services/auth.service";
+import { checkoutOrder } from "../Services/api.service";
 import "./Cart.css";
 
 const formatPrice = (price) => {
@@ -28,7 +29,6 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [toast, setToast] = useState(null);
   const [isCheckout, setIsCheckout] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -130,7 +130,7 @@ function Cart() {
   };
 
   // Submit Order Simulator
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
 
     // Basic Validation
@@ -146,62 +146,65 @@ function Cart() {
       return;
     }
 
-    // Prepare items list for WhatsApp/Zalo format
-    const itemsList = cartItems
-      .map((item) => `- ${item.name} (x${item.quantity}): ${formatPrice(item.price * item.quantity)}`)
-      .join("\n");
+    try {
+      // Prepare payload for backend
+      const payload = {
+        shipping: {
+          fullName: formData.name,
+          phone: formData.phone,
+          addressDetail: formData.address,
+          note: formData.notes
+        },
+        items: cartItems.map(item => ({
+          product_id: item.productId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity
+        })),
+        total: getCartTotal()
+      };
 
-    const message = `*ĐƠN ĐẶT HÀNG MỚI*\n\n*Thông tin người nhận:*\n- Tên: ${formData.name}\n- SĐT: ${formData.phone}\n- Địa chỉ: ${formData.address}\n- Ghi chú: ${formData.notes || "Không có"}\n\n*Danh sách sản phẩm:*\n${itemsList}\n\n*Tổng cộng: ${formatPrice(getCartTotal())}*`;
+      showToast("Đang chuyển hướng đến cổng thanh toán...", "info", "💳");
 
-    // Optionally: Hook into an API endpoint here to save order to Database
-    // await createOrderApi(orderData);
+      const response = await checkoutOrder(payload);
 
-    // After success:
-    clearCart();
-    setCartItems([]);
-    setIsCheckout(false);
-    setIsSuccess(true);
-    showToast("Đặt hàng thành công!", "success", "🎉");
+      // Extract from ResponseInterceptor format: response.data.data
+      const outerData = response.data?.data;
+      const resData = outerData?.data || outerData;
 
-    // Open Zalo pre-filled with order info
-    const encodedMsg = encodeURIComponent(message);
-    window.open(`https://zalo.me/0903242748?text=${encodedMsg}`, "_blank");
+      if (response.data?.success && resData?.html) {
+        // Clear cart first so when they return it's empty
+        clearCart();
+        setCartItems([]);
+
+        // Inject the sepay form to the document and submit
+        const sepayHtml = resData.html;
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = sepayHtml;
+        document.body.appendChild(tempDiv);
+        
+        // Find and submit the form
+        const sepayForm = document.getElementById("sepay");
+        if (sepayForm) {
+          sepayForm.submit();
+        } else {
+          // If script tag is provided instead, try executing it
+          const scripts = tempDiv.getElementsByTagName('script');
+          for (let i = 0; i < scripts.length; i++) {
+            eval(scripts[i].innerText);
+          }
+        }
+      } else {
+        showToast("Có lỗi xảy ra khi tạo đơn hàng", "error", "⚠️");
+      }
+    } catch (error) {
+      console.error("Checkout validation / API error:", error);
+      showToast("Lỗi kết nối tới máy chủ", "error", "❌");
+    }
   };
 
   const defaultImg =
     "https://res.cloudinary.com/dtdwjplew/image/upload/v1737903159/9_gnxlmk.jpg";
-
-  // Success Screen Render
-  if (isSuccess) {
-    return (
-      <div className="cart-page">
-        <Header />
-        <div className="content-wrapper" style={{ marginTop: "80px" }}>
-          <div className="cart-container">
-            <div className="cart-items-card checkout-success-view">
-              <div className="success-icon">
-                <i className="fas fa-check-circle"></i>
-              </div>
-              <h3>Đặt Hàng Thành Công!</h3>
-              <p>
-                Cảm ơn bạn {formData.name} đã tin tưởng và đặt hàng.<br />
-                Đơn hàng của bạn đã được ghi nhận. Chủ shop sẽ sớm liên hệ với bạn qua số <b>{formData.phone}</b>.
-              </p>
-              <button
-                type="button"
-                className="cart-empty-btn"
-                onClick={() => navigate("/products")}
-              >
-                Tiếp tục mua sắm
-              </button>
-            </div>
-          </div>
-        </div>
-        <ChatWidget />
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="cart-page">

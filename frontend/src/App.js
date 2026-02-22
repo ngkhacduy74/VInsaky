@@ -43,6 +43,7 @@ import Favorites from "./Pages/Favorites";
 import EditPost from "./Admin/EditPost";
 import Guide from "./Pages/Guide";
 import Cart from "./Pages/Cart";
+import PaymentSuccess from "./Pages/PaymentSuccess";
 
 const App = () => {
   const [message, setMessage] = useState("");
@@ -117,6 +118,7 @@ const App = () => {
             <Route path="/admin/edit-post/:postId" element={<EditPost />} />
             <Route path="/guide" element={<Guide />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
             {/* 404 Error Page */}
           </Routes>
           <PhoneFixed />

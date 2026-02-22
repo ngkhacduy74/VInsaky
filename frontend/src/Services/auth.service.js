@@ -4,6 +4,23 @@ import { notification } from "antd";
 // Base URL for API calls - always use /api/v1 (proxied through React dev server)
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || '/api/v1';
 
+// Helper to safely parse JWT tokens containing Unicode and Base64Url encoding
+const parseJwt = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      window.atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
+};
+
 // ---- Auto refresh access token if missing but refreshToken is present ----
 (async () => {
   const storedToken = localStorage.getItem("token");
@@ -138,8 +155,8 @@ const getCurrentUser = () => {
       // Nếu chưa có user trong localStorage, thử lấy từ token
       const token = localStorage.getItem("token");
       if (token) {
-        // Giải mã payload của JWT (không kiểm tra chữ ký)
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        // Giải mã payload của JWT an toàn
+        const payload = parseJwt(token);
         if (payload && payload.user) {
           userData = JSON.stringify(payload.user);
           localStorage.setItem("user", userData);
@@ -182,11 +199,10 @@ const validateToken = async () => {
       return { isValid: false, user: null };
     }
 
-    // Decode JWT payload (no signature check - just check expiry)
-    let payload;
-    try {
-      payload = JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
+    // Decode JWT payload (safely handling Unicode / Base64Url)
+    let payload = parseJwt(token);
+    
+    if (!payload) {
       return { isValid: false, user: null };
     }
 

@@ -21,6 +21,7 @@ import { UploadsModule } from './upload.module';
 import { ProductModule } from './product.module';
 import { DashboardModule } from './dasboard.module';
 import { PostModule } from './post.module';
+import { OrdersModule } from './order.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { PostModule } from './post.module';
     ProductModule,
     DashboardModule,
     PostModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [

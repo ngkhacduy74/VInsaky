@@ -98,6 +98,15 @@ const uploadFile = (formData, onUploadProgress) => {
   });
 };
 
+// Order operations
+const checkoutOrder = (orderData) => {
+  return apiClient.post("/orders/checkout", orderData);
+};
+
+const checkOrderStatus = (invoice) => {
+  return apiClient.get(`/orders/invoice/${invoice}`);
+};
+
 export {
   verifyOTPApi,
   loginApi,
@@ -110,6 +119,8 @@ export {
   getPostById,
   createPost,
   uploadFile,
+  checkoutOrder,
+  checkOrderStatus,
   apiClient,
 };
 
