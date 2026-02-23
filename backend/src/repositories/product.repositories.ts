@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateQuery } from 'mongoose';
+import { ClientSession, Model, UpdateQuery } from 'mongoose';
 import { LoginDto } from 'src/dtos/request/auth/login.dto';
+import { CreateOrderItemDto } from 'src/dtos/request/order/create-order.dto';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
 import { User, UserDocument } from 'src/schemas/user.schema';
 
@@ -58,5 +59,25 @@ export class ProductRepository {
 
   async countSearchProducts(query: Record<string, any>): Promise<number> {
     return this.productModel.countDocuments(query).exec();
+  }
+   async decrementIfEnough(
+    productId: string,
+    qty: number,
+    session?: ClientSession,
+  ): Promise<boolean> {
+    const res = await this.productModel.updateOne(
+      { id: productId, quantity: { $gte: qty } },
+      { $inc: { quantity: -qty } },
+      session ? { session } : undefined,
+    );
+    return res.modifiedCount > 0;
+  }
+
+  async checkAndReserveStock(items: CreateOrderItemDto[], session?: ClientSession): Promise<{ ok: true } | { ok: false; failedIndex: number }> {
+    for (let i = 0; i < items.length; i++) {
+      const ok = await this.decrementIfEnough(items[i].product_id, Number(items[i].quantity), session);
+      if (!ok) return { ok: false, failedIndex: i };
+    }
+    return { ok: true };
   }
 }

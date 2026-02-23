@@ -20,6 +20,8 @@ class ShippingInfo {
 
   @Prop({ required: true, trim: true })
   addressDetail: string;
+  @Prop({ required: true, trim: true })
+  email: string;
 
   @Prop({ trim: true })
   note?: string;

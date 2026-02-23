@@ -6,7 +6,7 @@ import { SepayCheckoutResponseDto } from 'src/dtos/response/sepay-checkout-respo
 
 export abstract class OrderAbstract {
   abstract checkoutSepay(
-    userId: string | undefined,
+    userId: string,
     payload: CreateOrderDto, 
   ): Promise<BaseResponseDto<SepayCheckoutResponseDto>>;
 

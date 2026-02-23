@@ -1,25 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { ClientSession, Model } from 'mongoose';
 import { Order, OrderDocument } from 'src/schemas/order.schema';
-import { CreateOrderDto } from 'src/dtos/request/order/create-order.dto';
+import { CreateOrderDto, CreateOrderItemDto } from 'src/dtos/request/order/create-order.dto';
 
 
 @Injectable()
 export class OrderRepository {
   constructor(@InjectModel(Order.name) private readonly model: Model<OrderDocument>) {}
 
-  createOrder(userId: string | undefined, dto: CreateOrderDto, invoice: string) {
-    return this.model.create({
-      user_id: userId || 'GUEST',
-      shipping: dto.shipping,
-      items: dto.items,
-      total: dto.total,
-      status: 'pending',
-      sepay: { orderInvoiceNumber: invoice, status: 'pending' },
-    });
-  }
-
+ createOrder(
+  userId: string | undefined,
+  dto: CreateOrderDto,
+  invoice: string,
+  total_prices: number,
+  session?: ClientSession,
+) {
+  return this.model.create(
+    [
+      {
+        user_id: userId || 'GUEST',
+        shipping: dto.shipping,
+        items: dto.items,
+        total: total_prices, // tốt hơn: truyền total_prices đã tính từ DB
+        status: 'pending',
+        sepay: { orderInvoiceNumber: invoice, status: 'pending' },
+      },
+    ],
+    session ? { session } : undefined,
+  );
+}
   findByInvoice(invoice: string) {
     return this.model.findOne({ 'sepay.orderInvoiceNumber': invoice });
   }
@@ -38,4 +48,14 @@ export class OrderRepository {
       },
     );
   }
+   async checkTotal(items: CreateOrderItemDto[]) {
+    return items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  }
+  async markEmailSent(invoice: string, session?: ClientSession) {
+  return this.model.updateOne(
+    { 'sepay.orderInvoiceNumber': invoice, emailSentAt: { $exists: false } },
+    { $set: { emailSentAt: new Date() } },
+    session ? { session } : undefined,
+  );
+}
 }

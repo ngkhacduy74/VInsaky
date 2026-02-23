@@ -11,11 +11,18 @@ import { OrderResponseDto } from 'src/dtos/response/order.dto';
 import { SepayCheckoutResponseDto } from 'src/dtos/response/sepay-checkout-response.dto';
 import { OrderRepository } from 'src/repositories/order.repositories';
 import { sepaySignature } from 'src/common/shared/function/sepay-sign';
+import { ProductRepository } from 'src/repositories/product.repositories';
+import mongoose from 'mongoose';
+import { MailService } from './mail.service';
+import { MailType } from 'src/schemas/mail.schema';
+import { orderPaidEmailHtml } from 'src/common/shared/function/order-email-template';
 
 @Injectable()
 export class OrderService implements OrderAbstract {
   constructor(
     private readonly repo: OrderRepository,
+    private readonly productRepo: ProductRepository,
+    private readonly mailService: MailService,
     private readonly config: ConfigService,
   ) {}
 
@@ -30,19 +37,37 @@ export class OrderService implements OrderAbstract {
   }
 
   async checkoutSepay(
-    userId: string | undefined,
+    userId: string,
     payload: CreateOrderDto,
   ): Promise<BaseResponseDto<SepayCheckoutResponseDto>> {
-    const total = Number(payload?.total);
-    if (!Number.isFinite(total) || total <= 0) {
-      throw new BadRequestException('Invalid total');
-    }
-    if (!payload?.shipping?.fullName || !payload?.shipping?.phone || !payload?.shipping?.addressDetail) {
-      throw new BadRequestException('Missing shipping info');
-    }
+    
     if (!payload?.items || payload.items.length === 0) {
-      throw new BadRequestException('Items is empty');
+      throw new BadRequestException('Thiếu thông tin sản phẩm');
     }
+    if (!payload?.shipping?.email) {
+  throw new BadRequestException('Thiếu email');
+}
+     if (!payload?.shipping?.fullName || !payload?.shipping?.phone || !payload?.shipping?.addressDetail) {
+      throw new BadRequestException('Thiếu thông tin giao hàng');
+    }
+    const total_prices = await this.repo.checkTotal(payload.items);
+    if (!Number.isFinite(total_prices) || total_prices <= 0) {
+  throw new BadRequestException('Không lấy được giá tiền sản phẩm');
+}
+   
+   
+
+    const invoice = this.createInvoice();
+   const session = await mongoose.startSession();
+try {
+  await session.withTransaction(async () => {
+    await this.productRepo.checkAndReserveStock(payload.items, session);
+    await this.repo.createOrder(userId, payload, invoice, total_prices, session);
+  });
+} finally {
+  session.endSession();
+}
+
 
         
     const merchant = this.getEnvOrThrow('SEPAY_MERCHANT');
@@ -52,18 +77,18 @@ export class OrderService implements OrderAbstract {
     const errorUrl = this.getEnvOrThrow('SEPAY_ERROR_URL');
     const cancelUrl = this.getEnvOrThrow('SEPAY_CANCEL_URL');
 
-    const invoice = this.createInvoice();
-    await this.repo.createOrder(userId, payload, invoice);
+
 
     const fields: Record<string, any> = {
       merchant,
       currency: 'VND',
-      order_amount: total,
+      order_amount: total_prices,
       operation: 'PURCHASE',
       order_description: `Thanh toan don hang ${invoice}`,
       order_invoice_number: invoice,
       payment_method: 'BANK_TRANSFER',
       customer_id: userId ?? 'GUEST',
+      email: payload.shipping.email,
       success_url: successUrl,
       error_url: errorUrl,
       cancel_url: cancelUrl,
@@ -94,7 +119,6 @@ export class OrderService implements OrderAbstract {
     headers: Record<string, any>,
     body: any,
   ): Promise<BaseResponseDto<null>> {
-    // 1) Verify header X-Secret-Key
     const expected = this.getEnvOrThrow('SEPAY_IPN_SECRET_KEY');
     const incoming =
       headers['x-secret-key'] ||
@@ -127,6 +151,19 @@ export class OrderService implements OrderAbstract {
 
     if (type === 'ORDER_PAID') {
       await this.repo.markPaid(invoice, body?.transaction?.transaction_id, body);
+       try {
+    const orderAfter = await this.repo.findByInvoice(invoice);
+    const to = orderAfter?.shipping?.email;
+    if (to) {
+      const subject = `Xác nhận đơn hàng ${invoice}`;
+      const html = orderPaidEmailHtml(orderAfter);
+
+      await this.mailService.sendMail(to, subject, html, MailType.ORDER_PAID);
+      await this.repo.markEmailSent(invoice);
+    }
+  } catch (e) {
+    console.error('Send paid email failed:', e);
+  }
     }
 
     return { success: true };

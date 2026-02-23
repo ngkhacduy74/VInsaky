@@ -10,7 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-class CreateOrderShippingDto {
+export class CreateOrderShippingDto {
   @IsString()
   @IsNotEmpty()
   fullName: string;
@@ -23,12 +23,17 @@ class CreateOrderShippingDto {
   @IsNotEmpty()
   addressDetail: string;
 
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+
+
   @IsOptional()
   @IsString()
   note?: string;
 }
 
-class CreateOrderItemDto {
+export class CreateOrderItemDto {
   @IsString()
   @IsNotEmpty()
   product_id: string;
@@ -61,6 +66,7 @@ export class CreateOrderDto {
 
   @Type(() => Number)
   @IsNumber()
+  @IsOptional()
   @Min(0)
-  total: number;
+  total?: number;
 }
