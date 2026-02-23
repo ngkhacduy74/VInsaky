@@ -78,7 +78,11 @@ function Header() {
         }
 
         const response = await authApiClient.get("/product/");
-        const products = response.data.data || [];
+        const products = Array.isArray(response.data.data?.items) 
+          ? response.data.data.items 
+          : Array.isArray(response.data.data) 
+            ? response.data.data 
+            : [];
 
         // Extract unique brands
         const uniqueBrands = [

@@ -12,8 +12,9 @@ import { SepayCheckoutResponseDto } from 'src/dtos/response/sepay-checkout-respo
 import { OrderRepository } from 'src/repositories/order.repositories';
 import { sepaySignature } from 'src/common/shared/function/sepay-sign';
 import { ProductRepository } from 'src/repositories/product.repositories';
-import mongoose from 'mongoose';
+import { Connection } from 'mongoose';
 import { MailService } from './mail.service';
+import { InjectConnection } from '@nestjs/mongoose';
 import { MailType } from 'src/schemas/mail.schema';
 import { orderPaidEmailHtml } from 'src/common/shared/function/order-email-template';
 
@@ -24,6 +25,7 @@ export class OrderService implements OrderAbstract {
     private readonly productRepo: ProductRepository,
     private readonly mailService: MailService,
     private readonly config: ConfigService,
+    @InjectConnection() private readonly connection: Connection,
   ) {}
 
   private createInvoice(): string {
@@ -58,15 +60,18 @@ export class OrderService implements OrderAbstract {
    
 
     const invoice = this.createInvoice();
-   const session = await mongoose.startSession();
-try {
-  await session.withTransaction(async () => {
-    await this.productRepo.checkAndReserveStock(payload.items, session);
-    await this.repo.createOrder(userId, payload, invoice, total_prices, session);
-  });
-} finally {
-  session.endSession();
-}
+    const session = await this.connection.startSession();
+    try {
+      await session.withTransaction(async () => {
+        const reserveResult = await this.productRepo.checkAndReserveStock(payload.items, session);
+        if (!reserveResult.ok) {
+          throw new BadRequestException(`Sản phẩm (Index: ${reserveResult.failedIndex}) không đủ số lượng trong kho`);
+        }
+        await this.repo.createOrder(userId, payload, invoice, total_prices, session);
+      });
+    } finally {
+      session.endSession();
+    }
 
 
         
