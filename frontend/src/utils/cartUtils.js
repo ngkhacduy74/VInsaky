@@ -24,7 +24,7 @@ const saveCart = (cart) => {
 // Add product to cart
 export const addToCart = (product, quantity = 1) => {
   const cart = getCart();
-  const productId = product._id || product.id;
+  const productId = product.id || product._id;
   const existing = cart.find((item) => item.productId === productId);
 
   if (existing) {

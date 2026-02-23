@@ -9,6 +9,10 @@ import { CreateOrderDto, CreateOrderItemDto } from 'src/dtos/request/order/creat
 export class OrderRepository {
   constructor(@InjectModel(Order.name) private readonly model: Model<OrderDocument>) {}
 
+  async startTransactionSession(): Promise<ClientSession> {
+    return await this.model.db.startSession();
+  }
+
  createOrder(
   userId: string | undefined,
   dto: CreateOrderDto,

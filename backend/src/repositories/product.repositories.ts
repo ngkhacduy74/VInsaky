@@ -5,6 +5,7 @@ import { LoginDto } from 'src/dtos/request/auth/login.dto';
 import { CreateOrderItemDto } from 'src/dtos/request/order/create-order.dto';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
 import { User, UserDocument } from 'src/schemas/user.schema';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class ProductRepository {
