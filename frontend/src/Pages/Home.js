@@ -106,9 +106,6 @@ const Home = () => {
             {/* Hero slider */}
             <BannerSection2 />
 
-            {/* USP bar */}
-            <BannerSection />
-
             {/* Danh mục nhanh */}
             <CategoryBar />
 
@@ -128,6 +125,10 @@ const Home = () => {
             <BlogCarousel posts={posts} loading={loadingPosts} />
 
             <RecommendTagCarousel />
+            
+            {/* Banner Section (USP or Custom Products) */}
+            <BannerSection />
+            
             <ChatWidget />
             <Footer />
           </div>

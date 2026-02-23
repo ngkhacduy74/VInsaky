@@ -25,4 +25,7 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   ava_img_url?: string;
+
+  @IsOptional()
+  is_active?: boolean | string;
 }

@@ -94,69 +94,112 @@ const BannerSection = () => {
     );
   };
 
-  // USP bar nhỏ gọn, màu trắng/xanh, hài hòa với slider ảnh trên
+  // redesigned USP bar to look more modern and premium
   if (!isCustomProducts || savedProducts.length === 0) {
     const usps = [
-      { icon: "🚚", title: "Giao hàng toàn quốc", sub: "Miễn phí đơn từ 2 triệu" },
-      { icon: "🛡️", title: "Bảo hành chính hãng", sub: "Đổi trả trong 30 ngày" },
-      { icon: "💎", title: "Sản phẩm chất lượng cao", sub: "500+ mặt hàng cao cấp" },
-      { icon: "📞", title: "Hỗ trợ 24/7", sub: "Hotline: 0903 242 748" },
+      { icon: "fas fa-truck-fast", title: "Giao hàng toàn quốc", sub: "Miễn phí đơn từ 2 triệu VNĐ", color: "#3b82f6" },
+      { icon: "fas fa-shield-alt", title: "Bảo hành chính hãng", sub: "Cam kết 100% chính hãng", color: "#10b981" },
+      { icon: "fas fa-award", title: "Sản phẩm chất lượng", sub: "Hơn 500+ mặt hàng cao cấp", color: "#f59e0b" },
+      { icon: "fas fa-headset", title: "Hỗ trợ 24/7", sub: "Hotline: 0903 242 748", color: "#6366f1" },
     ];
+    
     return (
-      <section style={{
-        background: "#f8f9fa",
-        padding: "20px 16px",
-        borderBottom: "1px solid #e9ecef",
-      }}>
+      <section className="usp-section my-4">
         <style>{`
-          .usp-item {
-            display: flex; align-items: center; gap: 12px;
-            padding: 16px 20px;
-            border-right: 1px solid #e9ecef;
-            transition: background 0.2s;
-            flex: 1;
-            min-width: 180px;
+          .usp-section {
+            background-color: transparent;
+            padding: 2rem 1rem;
           }
-          .usp-item:last-child { border-right: none; }
-          .usp-item:hover { background: #e8f0fe; border-radius: 12px; }
-          .usp-icon {
-            width: 40px; height: 40px; border-radius: 10px;
-            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px; flex-shrink: 0;
+          .usp-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
           }
-          .usp-title { font-weight: 700; font-size: 13px; color: #1e3a5f; margin-bottom: 1px; }
-          .usp-sub { font-size: 11px; color: #6b7280; }
-          @media (max-width: 768px) {
-            .usp-item { border-right: none; border-bottom: 1px solid #e9ecef; }
-            .usp-item:last-child { border-bottom: none; }
+          .usp-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: #ffffff;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f1f5f9;
+          }
+          .usp-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #e2e8f0;
+          }
+          .usp-icon-wrapper {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+          }
+          .usp-card:hover .usp-icon-wrapper {
+            transform: scale(1.05) rotate(5deg);
+          }
+          .usp-content {
+            display: flex;
+            flex-direction: column;
+          }
+          .usp-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+          }
+          .usp-sub {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.4;
+            margin: 0;
+          }
+          
+          @media (max-width: 992px) {
+            .usp-container {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+          @media (max-width: 576px) {
+            .usp-container {
+              grid-template-columns: 1fr;
+              gap: 1rem;
+            }
           }
         `}</style>
-        <div style={{
-          maxWidth: 900,
-          margin: "0 auto",
-          background: "#ffffff",
-          borderRadius: 16,
-          border: "1px solid #dbeafe",
-          borderTop: "3px solid #0d6efd",
-          boxShadow: "0 2px 12px rgba(13,110,253,0.08)",
-          overflow: "hidden",
-          display: "flex",
-          flexWrap: "wrap",
-        }}>
-          {usps.map((u) => (
-            <div className="usp-item" key={u.title}>
-              <div className="usp-icon">{u.icon}</div>
-              <div>
-                <div className="usp-title">{u.title}</div>
-                <div className="usp-sub">{u.sub}</div>
+        
+        <div className="usp-container">
+          {usps.map((u, i) => (
+            <div className="usp-card" key={i}>
+              <div 
+                className="usp-icon-wrapper" 
+                style={{ 
+                  backgroundColor: u.color + "15", 
+                  color: u.color 
+                }}
+              >
+                <i className={u.icon}></i>
+              </div>
+              <div className="usp-content">
+                <h3 className="usp-title">{u.title}</h3>
+                <p className="usp-sub">{u.sub}</p>
               </div>
             </div>
           ))}
         </div>
       </section>
     );
-
   }
 
 

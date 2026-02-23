@@ -151,19 +151,19 @@ try {
 
     if (type === 'ORDER_PAID') {
       await this.repo.markPaid(invoice, body?.transaction?.transaction_id, body);
-       try {
-    const orderAfter = await this.repo.findByInvoice(invoice);
-    const to = orderAfter?.shipping?.email;
-    if (to) {
-      const subject = `Xác nhận đơn hàng ${invoice}`;
-      const html = orderPaidEmailHtml(orderAfter);
+  //      try {
+  //   const orderAfter = await this.repo.findByInvoice(invoice);
+  //   const to = orderAfter?.shipping?.email;
+  //   if (to) {
+  //     const subject = `Xác nhận đơn hàng ${invoice}`;
+  //     const html = orderPaidEmailHtml(orderAfter);
 
-      await this.mailService.sendMail(to, subject, html, MailType.ORDER_PAID);
-      await this.repo.markEmailSent(invoice);
-    }
-  } catch (e) {
-    console.error('Send paid email failed:', e);
-  }
+  //     await this.mailService.sendMail(to, subject, html, MailType.ORDER_PAID);
+  //     await this.repo.markEmailSent(invoice);
+  //   }
+  // } catch (e) {
+  //   console.error('Send paid email failed:', e);
+  // }
     }
 
     return { success: true };

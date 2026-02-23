@@ -728,6 +728,17 @@ function Header() {
                           Hồ sơ
                         </Link>
                       </li>
+                      {user.role && user.role.toLowerCase() === "admin" && (
+                        <li>
+                          <Link
+                            className="dropdown-item px-3 py-2 header-dropdown-item"
+                            to="/admin"
+                          >
+                            <i className="bi bi-speedometer2"></i>
+                            Admin Space
+                          </Link>
+                        </li>
+                      )}
                       <li>
                         <Link
                           className="dropdown-item px-3 py-2 header-dropdown-item"

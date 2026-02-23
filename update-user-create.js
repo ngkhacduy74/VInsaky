@@ -1,485 +1,21 @@
-import React, { useState, useRef } from "react";
-import Header from "../Components/Header";
-import Footer from "../Components/Footer";
-import {
-  Container,
-  Card,
-  Form,
-  Button,
-  Alert,
-  Spinner,
-  Row,
-  Col,
-  Toast,
-} from "react-bootstrap";
-import axios from "axios";
-import { Save, X, Plus, Link, ArrowLeft, Upload } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+const fs = require('fs');
+const path = require('path');
 
-const UserCreateProduct = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [imageUrls, setImageUrls] = useState([""]);
-  const [videoUrl, setVideoUrl] = useState("");
-  const [formData, setFormData] = useState({
-    name: "",
-    brand: "",
-    price: "",
-    business_phone: "",
-    status: "SecondHand", // Sửa lại đúng giá trị backend yêu cầu
-    description: "",
-    size: "",
-    weight: "",
-    voltage: "",
-    warranty_period: 12,
-    quantity: 1,
-    features: [{ title: "", description: "" }],
-    image: [],
-    video: [],
-  });
-  const [errors, setErrors] = useState({});
-  const [showToast, setShowToast] = useState(false);
-  const descriptionDivRef = useRef();
+const filePath = path.join(__dirname, 'frontend/src/Admin/UserCreateProduct.js');
+let code = fs.readFileSync(filePath, 'utf8');
 
-  // Hàm chuyển đổi toàn bộ ký tự Unicode phông lạ về Latin thường (giống admin)
-  function toPlainText(str) {
-    // Map các block Unicode phổ biến về Latin thường
-    const unicodeMap = {
-      // Mathematical Bold, Italic, Script, Fraktur, Double-struck, Sans-serif, Monospace
-      // Chữ hoa
-      0x1d400: 0x41,
-      0x1d434: 0x41,
-      0x1d468: 0x41,
-      0x1d49c: 0x41,
-      0x1d4d0: 0x41,
-      0x1d504: 0x41,
-      0x1d538: 0x41,
-      0x1d56c: 0x41,
-      0x1d5a0: 0x41,
-      0x1d5d4: 0x41,
-      0x1d608: 0x41,
-      0x1d63c: 0x41,
-      0x1d670: 0x41,
-      // Chữ thường
-      0x1d41a: 0x61,
-      0x1d44e: 0x61,
-      0x1d482: 0x61,
-      0x1d4b6: 0x61,
-      0x1d4ea: 0x61,
-      0x1d51e: 0x61,
-      0x1d552: 0x61,
-      0x1d586: 0x61,
-      0x1d5ba: 0x61,
-      0x1d5ee: 0x61,
-      0x1d622: 0x61,
-      0x1d656: 0x61,
-      0x1d68a: 0x61,
-    };
-    return str.normalize("NFC").replace(/./gu, (c) => {
-      const code = c.codePointAt(0);
-      // Latin, số, dấu tiếng Việt, dấu câu cơ bản thì giữ nguyên
-      if (
-        (code >= 32 && code <= 126) ||
-        (code >= 0x00c0 && code <= 0x1ef9) || // Latin-1 Supplement + Latin Extended
-        (code >= 0x20 && code <= 0x2f) || // dấu câu
-        (code >= 0x30 && code <= 0x39) || // số
-        (code >= 0x41 && code <= 0x5a) || // A-Z
-        (code >= 0x61 && code <= 0x7a)
-      )
-        return c;
-      // Mathematical Unicode Latin: map về ký tự thường
-      // Chữ hoa
-      if (code >= 0x1d400 && code <= 0x1d419)
-        return String.fromCharCode(code - 0x1d400 + 0x41);
-      if (code >= 0x1d434 && code <= 0x1d44d)
-        return String.fromCharCode(code - 0x1d434 + 0x41);
-      if (code >= 0x1d468 && code <= 0x1d481)
-        return String.fromCharCode(code - 0x1d468 + 0x41);
-      if (code >= 0x1d49c && code <= 0x1d4b5)
-        return String.fromCharCode(code - 0x1d49c + 0x41);
-      if (code >= 0x1d4d0 && code <= 0x1d4e9)
-        return String.fromCharCode(code - 0x1d4d0 + 0x41);
-      if (code >= 0x1d504 && code <= 0x1d51d)
-        return String.fromCharCode(code - 0x1d504 + 0x41);
-      if (code >= 0x1d538 && code <= 0x1d551)
-        return String.fromCharCode(code - 0x1d538 + 0x41);
-      if (code >= 0x1d56c && code <= 0x1d585)
-        return String.fromCharCode(code - 0x1d56c + 0x41);
-      if (code >= 0x1d5a0 && code <= 0x1d5b9)
-        return String.fromCharCode(code - 0x1d5a0 + 0x41);
-      if (code >= 0x1d5d4 && code <= 0x1d5ed)
-        return String.fromCharCode(code - 0x1d5d4 + 0x41);
-      if (code >= 0x1d608 && code <= 0x1d621)
-        return String.fromCharCode(code - 0x1d608 + 0x41);
-      if (code >= 0x1d63c && code <= 0x1d655)
-        return String.fromCharCode(code - 0x1d63c + 0x41);
-      if (code >= 0x1d670 && code <= 0x1d689)
-        return String.fromCharCode(code - 0x1d670 + 0x41);
-      // Chữ thường
-      if (code >= 0x1d41a && code <= 0x1d433)
-        return String.fromCharCode(code - 0x1d41a + 0x61);
-      if (code >= 0x1d44e && code <= 0x1d467)
-        return String.fromCharCode(code - 0x1d44e + 0x61);
-      if (code >= 0x1d482 && code <= 0x1d49b)
-        return String.fromCharCode(code - 0x1d482 + 0x61);
-      if (code >= 0x1d4b6 && code <= 0x1d4cf)
-        return String.fromCharCode(code - 0x1d4b6 + 0x61);
-      if (code >= 0x1d4ea && code <= 0x1d503)
-        return String.fromCharCode(code - 0x1d4ea + 0x61);
-      if (code >= 0x1d51e && code <= 0x1d537)
-        return String.fromCharCode(code - 0x1d51e + 0x61);
-      if (code >= 0x1d552 && code <= 0x1d56b)
-        return String.fromCharCode(code - 0x1d552 + 0x61);
-      if (code >= 0x1d586 && code <= 0x1d59f)
-        return String.fromCharCode(code - 0x1d586 + 0x61);
-      if (code >= 0x1d5ba && code <= 0x1d5d3)
-        return String.fromCharCode(code - 0x1d5ba + 0x61);
-      if (code >= 0x1d5ee && code <= 0x1d607)
-        return String.fromCharCode(code - 0x1d5ee + 0x61);
-      if (code >= 0x1d622 && code <= 0x1d63b)
-        return String.fromCharCode(code - 0x1d622 + 0x61);
-      if (code >= 0x1d656 && code <= 0x1d66f)
-        return String.fromCharCode(code - 0x1d656 + 0x61);
-      if (code >= 0x1d68a && code <= 0x1d6a3)
-        return String.fromCharCode(code - 0x1d68a + 0x61);
-      // Số in đậm/in nghiêng
-      if (code >= 0x1d7ce && code <= 0x1d7d7)
-        return String.fromCharCode(code - 0x1d7ce + 0x30);
-      // Nếu không map được thì bỏ qua (trả về rỗng)
-      return "";
-    });
-  }
+const returnRegex = /return \(\s*<div className="content-wrapper">[\s\S]*?\);\s*};\s*export default/m;
 
-  // Hàm kiểm tra và làm sạch văn bản (loại bỏ ký tự đặc biệt, emoji, chỉ giữ lại chữ cái, số, dấu cách và một số ký tự cơ bản)
-  function sanitizeText(text) {
-    return text
-      .replace(/[^\w\s\u00C0-\u024F\u1E00-\u1EFF.,!?()%-]/g, "")
-      .trim();
-  }
-
-  // Utility: Remove all HTML tags except <img>, keep only plain text and images
-  function sanitizeDescriptionHtml(html) {
-    // Replace all tags except <img> with their text content
-    // 1. Replace all tags except <img> with their text content
-    // 2. Keep <img> tags as is
-    // 3. Remove style attributes from <img>
-    const div = document.createElement("div");
-    div.innerHTML = html;
-    // Remove all tags except <img>
-    div.querySelectorAll("*:not(img)").forEach((el) => {
-      if (el.parentNode) {
-        // Replace node with its text content
-        el.replaceWith(document.createTextNode(el.textContent));
-      }
-    });
-    // Remove all style attributes from <img>
-    div.querySelectorAll("img").forEach((img) => {
-      img.removeAttribute("style");
-      img.style.maxWidth = "100%";
-      img.style.display = "block";
-    });
-    return div.innerHTML;
-  }
-
-  // Handle paste in description (image or plain text)
-  const handleDescriptionPaste = async (e) => {
-    const clipboardItems = e.clipboardData && e.clipboardData.items;
-    let handled = false;
-    if (clipboardItems) {
-      for (let i = 0; i < clipboardItems.length; i++) {
-        const item = clipboardItems[i];
-        if (item.type.indexOf("image") !== -1) {
-          e.preventDefault();
-          const file = item.getAsFile();
-          if (file) {
-            const formDataImg = new FormData();
-            formDataImg.append("img", file);
-            try {
-              const res = await axios.post(
-                `${process.env.REACT_APP_BACKEND_URL}/file/upload-image`,
-                formDataImg,
-                { headers: { "Content-Type": "multipart/form-data" } }
-              );
-              const imageUrl =
-                res.data.url || res.data.path || res.data.secure_url;
-              if (imageUrl && descriptionDivRef.current) {
-                const sel = window.getSelection();
-                if (sel && sel.rangeCount > 0) {
-                  const range = sel.getRangeAt(0);
-                  const img = document.createElement("img");
-                  img.src = imageUrl;
-                  img.style.maxWidth = "100%";
-                  img.style.display = "block";
-                  range.insertNode(img);
-                  range.setStartAfter(img);
-                  range.collapse(true);
-                  sel.removeAllRanges();
-                  sel.addRange(range);
-                } else {
-                  descriptionDivRef.current.innerHTML += `<img src='${imageUrl}' style='max-width:100%;display:block;' />`;
-                }
-                // Sau khi chèn ảnh, chỉ lấy text thuần cho formData
-                let text = Array.from(descriptionDivRef.current.childNodes)
-                  .filter((node) => node.nodeType === 3)
-                  .map((node) => node.textContent)
-                  .join(" ");
-                text = toPlainText(text);
-                setFormData((prev) => ({
-                  ...prev,
-                  description: text.trim(),
-                }));
-              }
-            } catch (err) {
-              alert("Upload ảnh thất bại!");
-            }
-            handled = true;
-          }
-        }
-      }
-    }
-    if (!handled) {
-      e.preventDefault();
-      let text = e.clipboardData.getData("text/plain");
-      text = toPlainText(text);
-      document.execCommand("insertText", false, text);
-      setTimeout(() => {
-        if (descriptionDivRef.current) {
-          let text = Array.from(descriptionDivRef.current.childNodes)
-            .filter((node) => node.nodeType === 3)
-            .map((node) => node.textContent)
-            .join(" ");
-          text = toPlainText(text);
-          setFormData((prev) => ({
-            ...prev,
-            description: text.trim(),
-          }));
-        }
-      }, 0);
-    }
-  };
-
-  // Sử dụng toPlainText cho mọi trường hợp nhập/chỉnh sửa mô tả
-  const handleDescriptionInput = () => {
-    if (descriptionDivRef.current) {
-      // Lấy text thuần từ contentEditable div
-      let text =
-        descriptionDivRef.current.textContent ||
-        descriptionDivRef.current.innerText ||
-        "";
-
-      // Cập nhật formData với text thuần
-      setFormData((prev) => ({
-        ...prev,
-        description: text.trim(),
-      }));
-    }
-  };
-
-  // Handle input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
-
-  // Handle features array
-  const handleFeatureChange = (index, field, value) => {
-    const newFeatures = [...formData.features];
-    newFeatures[index] = { ...newFeatures[index], [field]: value };
-    setFormData((prev) => ({ ...prev, features: newFeatures }));
-    if (errors.features) setErrors((prev) => ({ ...prev, features: "" }));
-  };
-  const addFeature = () =>
-    setFormData((prev) => ({
-      ...prev,
-      features: [...prev.features, { title: "", description: "" }],
-    }));
-  const removeFeature = (index) => {
-    if (formData.features.length > 1) {
-      const newFeatures = formData.features.filter((_, i) => i !== index);
-      setFormData((prev) => ({ ...prev, features: newFeatures }));
-    }
-  };
-
-  // Handle image URL changes
-  const handleImageUrlChange = (index, value) => {
-    const newImageUrls = [...imageUrls];
-    newImageUrls[index] = value.trim();
-    setImageUrls(newImageUrls);
-    if (errors.images) setErrors((prev) => ({ ...prev, images: "" }));
-  };
-  const addImageUrl = () => {
-    if (imageUrls.length < 5) setImageUrls([...imageUrls, ""]);
-  };
-  const removeImageUrl = (index) => {
-    if (imageUrls.length > 1)
-      setImageUrls(imageUrls.filter((_, i) => i !== index));
-  };
-  const handleVideoUrlChange = (value) => setVideoUrl(value.trim());
-
-  // Hàm upload file ảnh (giống trang create-product)
-  const handleUploadImageFile = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const allowedTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/gif",
-      "image/webp",
-    ];
-    if (!allowedTypes.includes(file.type)) {
-      alert("Chỉ chấp nhận file ảnh: JPG, PNG, GIF, WebP");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      alert("File ảnh không được vượt quá 5MB");
-      return;
-    }
-    const formDataImg = new FormData();
-    formDataImg.append("img", file);
-    try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/file/upload-image`,
-        formDataImg,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-      const urls =
-        res.data.urls ||
-        [res.data.url, res.data.path, res.data.secure_url].filter(Boolean);
-      if (urls.length > 0) {
-        setImageUrls((prev) => {
-          const combined = [...prev, ...urls];
-          return combined.slice(0, 5);
-        });
-      } else {
-        alert("Không lấy được URL ảnh từ server!");
-      }
-    } catch (error) {
-      alert("Upload ảnh thất bại!");
-    }
-  };
-
-  // Validate URL format
-  const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch {
-      return false;
-    }
-  };
-  const isImageUrl = (url) => {
-    if (!isValidUrl(url)) return false;
-    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"];
-    const urlLower = url.toLowerCase();
-    return imageExtensions.some((ext) => urlLower.includes(ext));
-  };
-  const isVideoUrl = (url) => {
-    if (!isValidUrl(url)) return false;
-    const videoExtensions = [".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm"];
-    const urlLower = url.toLowerCase();
-    return videoExtensions.some((ext) => urlLower.includes(ext));
-  };
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Tên sản phẩm là bắt buộc";
-    if (!formData.brand.trim()) newErrors.brand = "Thương hiệu là bắt buộc";
-    if (!formData.price || parseFloat(formData.price) < 1000)
-      newErrors.price = "Giá phải lớn hơn hoặc bằng 1.000 VND";
-    if (!formData.business_phone.trim())
-      newErrors.business_phone = "Số điện thoại là bắt buộc";
-    if (!formData.description.trim())
-      newErrors.description = "Mô tả là bắt buộc";
-    if (formData.weight && parseFloat(formData.weight) <= 0)
-      newErrors.weight = "Trọng lượng phải lớn hơn 0";
-    if (
-      formData.voltage &&
-      !/^\d+(V)?$/.test(formData.voltage.replace(/\s/g, ""))
-    )
-      newErrors.voltage = "Điện áp không hợp lệ (ví dụ: 220V)";
-    if (formData.quantity && parseInt(formData.quantity) <= 0)
-      newErrors.quantity = "Số lượng phải lớn hơn 0";
-    if (formData.features.some((f) => !f.title.trim() || !f.description.trim()))
-      newErrors.features = "Tất cả tính năng phải có tiêu đề và mô tả";
-    const validImageUrls = imageUrls.filter((url) => url.trim() !== "");
-    if (validImageUrls.length === 0)
-      newErrors.images = "Cần ít nhất một URL hình ảnh";
-    else if (validImageUrls.some((url) => !isImageUrl(url)))
-      newErrors.images = "Một số URL hình ảnh không hợp lệ";
-    if (videoUrl.trim() !== "" && !isVideoUrl(videoUrl))
-      newErrors.video = "URL video không hợp lệ";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) {
-      setError(
-        "Vui lòng điền đầy đủ các trường bắt buộc và kiểm tra lại thông tin"
-      );
-      return;
-    }
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Vui lòng đăng nhập để tạo sản phẩm");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    setSuccess("");
-    try {
-      const dataToSend = {
-        ...formData,
-        price: parseFloat(formData.price),
-        weight: parseFloat(formData.weight),
-        warranty_period: parseInt(formData.warranty_period),
-        quantity: parseInt(formData.quantity),
-        image: imageUrls.filter((url) => url.trim() !== ""),
-        video: videoUrl.trim() !== "" ? [videoUrl] : [],
-      };
-      await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/product/createProduct`,
-        dataToSend,
-        { headers: { "Content-Type": "application/json", token } }
-      );
-      setSuccess("Tạo sản phẩm thành công!");
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-        window.location.href = "/";
-      }, 2000);
-    } catch (err) {
-      setError("Không thể tạo sản phẩm. Vui lòng thử lại.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="content-wrapper" style={{ backgroundColor: "#f8fafc", paddingBottom: "100px", position: "relative", overflow: "hidden" }}>
-      {/* Decorative Background Elements */}
-      <div style={{ position: "absolute", top: "-10%", left: "-10%", width: "50%", height: "50%", background: "radial-gradient(circle, rgba(59,130,246,0.12) 0%, rgba(255,255,255,0) 70%)", borderRadius: "50%", zIndex: 0, pointerEvents: "none" }}></div>
-      <div style={{ position: "absolute", top: "20%", right: "-10%", width: "40%", height: "60%", background: "radial-gradient(circle, rgba(147,51,234,0.08) 0%, rgba(255,255,255,0) 70%)", borderRadius: "50%", zIndex: 0, pointerEvents: "none" }}></div>
-      <div style={{ position: "absolute", bottom: "10%", left: "10%", width: "30%", height: "40%", background: "radial-gradient(circle, rgba(16,185,129,0.08) 0%, rgba(255,255,255,0) 70%)", borderRadius: "50%", zIndex: 0, pointerEvents: "none" }}></div>
-
+const newReturn = `return (
+    <div className="content-wrapper" style={{ backgroundColor: "#f8fafc", paddingBottom: "100px" }}>
       <Header />
 
-      <Container style={{ maxWidth: 900, marginTop: "40px", position: "relative", zIndex: 1 }}>
-        <style>{`
+      <Container style={{ maxWidth: 900, marginTop: "40px" }}>
+        <style>{\`
           .user-create-product-header {
-            margin-bottom: 32px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-            padding: 24px 32px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.8);
           }
           .user-create-product-header h2 {
             font-weight: 800;
@@ -488,45 +24,30 @@ const UserCreateProduct = () => {
             margin: 0;
             flex-grow: 1;
             text-align: center;
-            background: linear-gradient(90deg, #1e293b, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
           }
           .user-create-product-section {
             background: #ffffff;
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 32px;
             margin-bottom: 24px;
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-          }
-          .user-create-product-section::before {
-             content: '';
-             position: absolute;
-             top: 0; left: 0; width: 4px; height: 100%;
-             background: transparent;
-             transition: all 0.3s ease;
-          }
-          .user-create-product-section:hover::before {
-             background: #3b82f6;
           }
           .user-create-product-section:hover {
-            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.08);
-            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
           }
           .section-title {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: #0f172a;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding-bottom: 16px;
-            border-bottom: 2px dashed #f1f5f9;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
           }
           .user-create-product-label {
             color: #475569;
@@ -535,45 +56,39 @@ const UserCreateProduct = () => {
             margin-bottom: 8px;
           }
           .form-control {
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid #cbd5e1;
-            padding: 14px 18px;
+            padding: 12px 16px;
             transition: all 0.2s;
             background-color: #f8fafc;
           }
           .form-control:focus {
             background-color: #ffffff;
             border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
           }
           .image-upload-container {
-            border: 2px dashed #94a3b8;
-            border-radius: 16px;
-            padding: 48px 24px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 40px 20px;
             text-align: center;
             background: #f8fafc;
-            transition: all 0.3s;
+            transition: all 0.2s;
             cursor: pointer;
             margin-bottom: 20px;
           }
           .image-upload-container:hover {
             border-color: #3b82f6;
             background: #eff6ff;
-            transform: scale(1.02);
           }
           .image-preview-card {
             position: relative;
-            border-radius: 14px;
+            border-radius: 12px;
             overflow: hidden;
             border: 1px solid #e2e8f0;
             aspect-ratio: 1;
             background: #f1f5f9;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-          }
-          .image-preview-card:hover {
-             transform: translateY(-4px);
-             box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
           }
           .image-preview-card img {
             width: 100%;
@@ -582,90 +97,88 @@ const UserCreateProduct = () => {
           }
           .image-remove-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(239, 68, 68, 0.95);
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 68, 68, 0.9);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
             z-index: 10;
-            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
           }
           .image-remove-btn:hover {
             background: rgb(220, 38, 38);
-            transform: scale(1.15) rotate(90deg);
+            transform: scale(1.1);
           }
           .sticky-action-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            padding: 20px 32px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 16px 24px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
             z-index: 1000;
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            gap: 20px;
-            border-top: 1px solid rgba(226, 232, 240, 0.8);
+            gap: 16px;
+            border-top: 1px solid #e2e8f0;
           }
           .btn-save-sticky {
-            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            background: linear-gradient(135deg, #0d6efd, #2563eb);
             border: none;
-            border-radius: 12px;
-            padding: 14px 40px;
-            font-weight: 700;
-            font-size: 1.15rem;
+            border-radius: 10px;
+            padding: 12px 36px;
+            font-weight: 600;
+            font-size: 1.1rem;
             color: white;
-            box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
-            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
           }
           .btn-save-sticky:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.3);
           }
           .description-editable {
-            min-height: 220px;
+            min-height: 200px;
             border: 1px solid #cbd5e1;
-            border-radius: 14px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 16px;
             font-family: inherit;
             background: #f8fafc;
             outline: none;
             word-break: break-word;
             transition: all 0.2s;
-            line-height: 1.6;
           }
           .description-editable:focus {
             background: #fff;
             border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
           }
-        `}</style>
+        \`}</style>
 
         <div className="user-create-product-header">
           <Button
             variant="light"
             onClick={() => navigate(-1)}
-            style={{ borderRadius: "14px", width: "52px", height: "52px", display: "flex", alignItems: "center", justifyContent: "center", background: "#ffffff" }}
-            className="shadow-sm border-0"
+            style={{ borderRadius: "10px", width: "45px", height: "45px", display: "flex", alignItems: "center", justifyContent: "center" }}
+            className="shadow-sm border-0 bg-white"
           >
-            <ArrowLeft size={24} color="#334155" />
+            <ArrowLeft size={20} color="#475569" />
           </Button>
           <h2>Tạo Sản Phẩm Mới</h2>
-          <div style={{ width: "52px" }}></div>
+          <div style={{ width: "45px" }}></div>
         </div>
 
         {error && <Alert variant="danger" className="border-0 shadow-sm" style={{ borderRadius: "12px" }}>{error}</Alert>}
@@ -851,7 +364,7 @@ const UserCreateProduct = () => {
                     type="text"
                     value={feature.title}
                     onChange={(e) => handleFeatureChange(index, "title", e.target.value)}
-                    placeholder={`Tiêu đề (VD: Công nghệ)`}
+                    placeholder={\`Tiêu đề (VD: Công nghệ)\`}
                     isInvalid={!!errors.features}
                   />
                 </Col>
@@ -860,7 +373,7 @@ const UserCreateProduct = () => {
                     type="text"
                     value={feature.description}
                     onChange={(e) => handleFeatureChange(index, "description", e.target.value)}
-                    placeholder={`Mô tả tính năng`}
+                    placeholder={\`Mô tả tính năng\`}
                     isInvalid={!!errors.features}
                   />
                 </Col>
@@ -925,7 +438,7 @@ const UserCreateProduct = () => {
                           </button>
                           <img 
                             src={url} 
-                            alt={`Preview ${index + 1}`} 
+                            alt={\`Preview \${index + 1}\`} 
                             onError={(e) => { e.target.style.display = "none"; }} 
                           />
                         </div>
@@ -1077,3 +590,8 @@ const UserCreateProduct = () => {
 };
 
 export default UserCreateProduct;
+`;
+
+const updatedCode = code.replace(returnRegex, newReturn);
+fs.writeFileSync(filePath, updatedCode, 'utf8');
+console.log('Successfully updated UserCreateProduct.js');

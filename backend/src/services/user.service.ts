@@ -35,10 +35,27 @@ export class UserService implements UserAbstract {
     const match: any = {};
 
     if (searchTerm) {
-      match.fullname = { $regex: searchTerm, $options: 'i' };
+      // Create an accent-insensitive regex pattern for Vietnamese characters
+      const createAsciiRegex = (str: string) => {
+        return str
+          .replace(/[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬ]/g, '[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬ]')
+          .replace(/[eEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆ]/g, '[eEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆ]')
+          .replace(/[iIìÌỉỈĩĨíÍịỊ]/g, '[iIìÌỉỈĩĨíÍịỊ]')
+          .replace(/[oOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢ]/g, '[oOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢ]')
+          .replace(/[uUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰ]/g, '[uUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰ]')
+          .replace(/[yYỳỲỷỶỹỸýÝỵỴ]/g, '[yYỳỲỷỶỹỸýÝỵỴ]')
+          .replace(/[dDđĐ]/g, '[dDđĐ]');
+      };
+      
+      const normalizedSearchTerm = createAsciiRegex(searchTerm.toLowerCase());
+      match.fullname = { $regex: normalizedSearchTerm, $options: 'i' };
     }
     if (statusFilter && statusFilter !== 'All') {
-      match.is_active = statusFilter === 'Active';
+      const isActive = statusFilter === 'Active';
+      match.$or = [
+        { is_active: isActive },
+        { is_active: isActive ? 'true' : 'false' }
+      ];
     }
 
     if (roleFilter && roleFilter !== 'All') {
@@ -56,6 +73,8 @@ export class UserService implements UserAbstract {
       email: u.email,
       role: u.role,
       ava_img_url: u.ava_img_url,
+      phone: u.phone,
+      is_active: u.is_active,
     }));
 
     return {
@@ -156,6 +175,7 @@ export class UserService implements UserAbstract {
         ...(dto.ava_img_url !== undefined
           ? { ava_img_url: dto.ava_img_url }
           : {}),
+        ...(dto.is_active !== undefined ? { is_active: dto.is_active === true || dto.is_active === 'true' } : {}),
       });
 
       if (!updated) {

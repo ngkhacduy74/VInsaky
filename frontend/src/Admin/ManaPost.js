@@ -78,12 +78,20 @@ const ManagePost = () => {
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Search and Filter State
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [conditionFilter, setConditionFilter] = useState("All");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [conditions, setConditions] = useState([]);
   const [categories, setCategories] = useState([]);
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPosts, setTotalPosts] = useState(0);
+  
   const [toggleLoading, setToggleLoading] = useState({}); // Track loading state for individual posts
 
   // Effect to update tokens when location state changes
@@ -190,39 +198,56 @@ const ManagePost = () => {
     }
   };
 
-  // Fetch post data and extract unique conditions and categories
+  // Fetch post data
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Fetch posts without authentication since the endpoint doesn't require it
-        const response = await api.get("/post/");
+        const skip = (currentPage - 1) * pageSize;
+        const params = {
+          skip,
+          limit: pageSize,
+          ...(searchTerm && { keyword: searchTerm }),
+          ...(statusFilter !== "All" && { status: statusFilter }),
+          ...(conditionFilter !== "All" && { condition: conditionFilter }),
+          // Note: multiple categories might need special handling, but we send the first selected one if needed
+          ...(selectedCategories.length > 0 && { category: selectedCategories[0] }),
+        };
 
-        const postData = Array.isArray(response.data.data)
-          ? response.data.data
-          : Array.isArray(response.data)
-          ? response.data
-          : [];
+        const response = await api.get("/post/", { params });
+
+        let postData = [];
+        if (response.data.success) {
+          if (response.data.data && Array.isArray(response.data.data.items)) {
+            postData = response.data.data.items;
+            setTotalPosts(response.data.data.total || 0);
+          } else if (Array.isArray(response.data.data)) {
+            postData = response.data.data;
+            setTotalPosts(response.data.total || postData.length);
+          } else if (response.data.data) {
+            postData = [response.data.data];
+            setTotalPosts(1);
+          }
+        }
 
         setPosts(postData);
         setFilteredPosts(postData);
 
-        // Extract unique conditions and categories
-        const uniqueConditions = [
-          ...new Set(postData.map((p) => p.condition).filter(Boolean)),
-        ];
-        const uniqueCategories = [
-          ...new Set(postData.map((p) => p.category).filter(Boolean)),
-        ];
-        setConditions(uniqueConditions);
-        setCategories(uniqueCategories);
+        // Fetch all categories and conditions once for filters if not set
+        if (conditions.length === 0 || categories.length === 0) {
+           const allResponse = await api.get("/post/?limit=1000"); // Temporarily fetch a batch to get unique conditions
+           const allData = Array.isArray(allResponse.data.data?.items) ? allResponse.data.data.items : [];
+           const uniqueConditions = [...new Set(allData.map((p) => p.condition).filter(Boolean))];
+           const uniqueCategories = [...new Set(allData.map((p) => p.category).filter(Boolean))];
+           if(uniqueConditions.length > 0) setConditions(uniqueConditions);
+           if(uniqueCategories.length > 0) setCategories(uniqueCategories);
+        }
+
       } catch (err) {
         console.error("Fetch Error:", err);
-        setError(
-          err.message || "Failed to fetch posts. Please try again later."
-        );
+        setError("Failed to fetch posts. Please try again later.");
         setPosts([]);
         setFilteredPosts([]);
       } finally {
@@ -230,54 +255,36 @@ const ManagePost = () => {
       }
     };
 
-    // Fetch posts immediately without waiting for tokens
-    fetchPosts();
-  }, []); // Remove tokens.accessToken dependency
+    // Debounce to avoid rapid fetching while typing search terms
+    const delayDebounceFn = setTimeout(() => {
+      fetchPosts();
+    }, 500);
 
-  // Apply filters whenever searchTerm, statusFilter, conditionFilter, or selectedCategories change
+    return () => clearTimeout(delayDebounceFn);
+  }, [currentPage, pageSize, searchTerm, statusFilter, conditionFilter, selectedCategories]);
+
+  // Remove the duplicate filtering effect since the API handles it now.
   useEffect(() => {
-    let result = posts;
+    setFilteredPosts(posts);
+  }, [posts]);
 
-    // Filter by search term
-    if (searchTerm) {
-      result = result.filter((post) =>
-        post.title?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filter by status
-    if (statusFilter !== "All") {
-      result = result.filter((post) => post.status === statusFilter);
-    }
-
-    // Filter by condition
-    if (conditionFilter !== "All") {
-      result = result.filter((post) => post.condition === conditionFilter);
-    }
-
-    // Filter by categories
-    if (selectedCategories.length > 0) {
-      result = result.filter((post) =>
-        selectedCategories.includes(post.category)
-      );
-    }
-
-    setFilteredPosts(result);
-  }, [searchTerm, statusFilter, conditionFilter, selectedCategories, posts]);
 
   // Handle search input change
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1);
   };
 
   // Handle status dropdown change
   const handleStatusChange = (e) => {
     setStatusFilter(e.target.value);
+    setCurrentPage(1);
   };
 
   // Handle condition dropdown change
   const handleConditionChange = (e) => {
     setConditionFilter(e.target.value);
+    setCurrentPage(1);
   };
 
   // Handle category checkbox change
@@ -384,6 +391,111 @@ const ManagePost = () => {
     } catch (err) {
       alert("Xóa bài viết thất bại!");
     }
+  };
+
+  // Pagination UI
+  const totalPages = Math.ceil(totalPosts / pageSize);
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
+  const renderPaginationItems = () => {
+    let items = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        items.push(
+          <Button
+            key={i}
+            variant={currentPage === i ? "primary" : "light"}
+            size="sm"
+            style={{
+              borderRadius: "8px",
+              fontWeight: "600",
+              width: "36px",
+              height: "36px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: currentPage === i ? "#fff" : "#475569",
+              border: currentPage === i ? "none" : "1px solid #e2e8f0",
+              backgroundColor: currentPage === i ? "#3b82f6" : "#ffffff",
+            }}
+            onClick={() => handlePageChange(i)}
+          >
+            {i}
+          </Button>
+        );
+      }
+    } else {
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+
+      if (startPage > 1) {
+        items.push(
+          <Button
+            key={1}
+            variant={currentPage === 1 ? "primary" : "light"}
+            size="sm"
+            style={{ borderRadius: "8px", fontWeight: "600", width: "36px", height: "36px", color: currentPage === 1 ? "#fff" : "#475569", border: currentPage === 1 ? "none" : "1px solid #e2e8f0", backgroundColor: currentPage === 1 ? "#3b82f6" : "#ffffff" }}
+            onClick={() => handlePageChange(1)}
+          >
+            1
+          </Button>
+        );
+        if (startPage > 2) {
+          items.push(<span key="ellipsis1" className="px-2 d-flex align-items-end flex-column justify-content-end pb-1" style={{ color: "#94a3b8", fontWeight: "bold" }}>...</span>);
+        }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        items.push(
+          <Button
+            key={i}
+            variant={currentPage === i ? "primary" : "light"}
+            size="sm"
+            style={{
+              borderRadius: "8px",
+              fontWeight: "600",
+              width: "36px",
+              height: "36px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: currentPage === i ? "#fff" : "#475569",
+              border: currentPage === i ? "none" : "1px solid #e2e8f0",
+              backgroundColor: currentPage === i ? "#3b82f6" : "#ffffff",
+            }}
+            onClick={() => handlePageChange(i)}
+          >
+            {i}
+          </Button>
+        );
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          items.push(<span key="ellipsis2" className="px-2 d-flex align-items-end flex-column justify-content-end pb-1" style={{ color: "#94a3b8", fontWeight: "bold" }}>...</span>);
+        }
+        items.push(
+          <Button
+            key={totalPages}
+            variant={currentPage === totalPages ? "primary" : "light"}
+            size="sm"
+            style={{ borderRadius: "8px", fontWeight: "600", width: "36px", height: "36px", color: currentPage === totalPages ? "#fff" : "#475569", border: currentPage === totalPages ? "none" : "1px solid #e2e8f0", backgroundColor: currentPage === totalPages ? "#3b82f6" : "#ffffff" }}
+            onClick={() => handlePageChange(totalPages)}
+          >
+            {totalPages}
+          </Button>
+        );
+      }
+    }
+    return items;
   };
 
   if (error && error.includes("Session expired")) {
@@ -504,23 +616,21 @@ const ManagePost = () => {
               <Col md={3}>
                 <Form.Group>
                   <Form.Label>Filter by Category</Form.Label>
-                  <div style={{ maxHeight: "120px", overflowY: "auto" }}>
-                    {categories.length > 0 ? (
-                      categories.map((category) => (
-                        <Form.Check
-                          key={category}
-                          type="checkbox"
-                          label={category}
-                          checked={selectedCategories.includes(category)}
-                          onChange={() => handleCategoryChange(category)}
-                        />
-                      ))
-                    ) : (
-                      <p className="text-muted small">
-                        No categories available.
-                      </p>
-                    )}
-                  </div>
+                  <Form.Select
+                    value={selectedCategories.length > 0 ? selectedCategories[0] : "All"}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSelectedCategories(value === "All" ? [] : [value]);
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value="All">All</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </Form.Select>
                 </Form.Group>
               </Col>
               <Col md={2} className="d-flex align-items-end">
@@ -531,10 +641,26 @@ const ManagePost = () => {
             </Row>
 
             {/* Posts Summary */}
-            <div className="mb-3">
+            <div className="mb-3 d-flex justify-content-between align-items-center">
               <small className="text-muted">
-                Showing {filteredPosts.length} of {posts.length} posts
+                Showing {filteredPosts.length} posts on this page (Total: {totalPosts})
               </small>
+              <div className="d-flex align-items-center gap-2">
+                <span className="text-muted" style={{ fontSize: "0.9rem" }}>Items per page:</span>
+                <Form.Select 
+                  size="sm" 
+                  value={pageSize} 
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  style={{ width: "80px", borderRadius: "8px" }}
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                </Form.Select>
+              </div>
             </div>
 
             {filteredPosts.length === 0 ? (
@@ -653,6 +779,41 @@ const ManagePost = () => {
                   ))}
                 </tbody>
               </Table>
+            )}
+
+            {/* Pagination UI */}
+            {!loading && !error && filteredPosts.length > 0 && totalPages > 1 && (
+              <div className="d-flex justify-content-between align-items-center mt-4 p-3 bg-white shadow-sm" style={{ borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+                <div className="text-muted" style={{ fontSize: "0.9rem", fontWeight: "500", color: "#64748b" }}>
+                  Showing <span style={{ color: "#0f172a", fontWeight: "600" }}>{(currentPage - 1) * pageSize + 1}</span> to <span style={{ color: "#0f172a", fontWeight: "600" }}>{Math.min(currentPage * pageSize, totalPosts)}</span> of <span style={{ color: "#0f172a", fontWeight: "600" }}>{totalPosts}</span> posts
+                </div>
+                
+                <div className="d-flex gap-2 align-items-center">
+                  <Button
+                    variant="light"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    style={{ borderRadius: "8px", fontWeight: "600", color: "#475569", border: "1px solid #e2e8f0", padding: "0.25rem 0.75rem" }}
+                  >
+                    Previous
+                  </Button>
+                  
+                  <div className="d-flex gap-1">
+                    {renderPaginationItems()}
+                  </div>
+
+                  <Button
+                    variant="light"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    style={{ borderRadius: "8px", fontWeight: "600", color: "#475569", border: "1px solid #e2e8f0", padding: "0.25rem 0.75rem" }}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
         </Col>

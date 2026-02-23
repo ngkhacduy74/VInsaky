@@ -253,7 +253,7 @@ export class ProductService implements ProductAbstract {
       } = data;
 
       const safeSkip = Math.max(0, skip);
-      const safeLimit = Math.min(100, Math.max(1, limit));
+      const safeLimit = Math.min(10000, Math.max(1, limit));
 
       const query: Record<string, any> = {};
 

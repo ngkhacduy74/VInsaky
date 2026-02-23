@@ -62,7 +62,7 @@ export class PostController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   async getPostById(@Param('id') id: string, @Req() req: any) {
-    return await this.postService.getPostById(id, req.user.user.id);
+    return await this.postService.getPostById(id, req?.user?.user?.id);
   }
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RoleGuard)

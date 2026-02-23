@@ -19,6 +19,10 @@ export class UpdateProductDto {
   brand?: string;
 
   @IsOptional()
+  @IsString()
+  category?: string;
+
+  @IsOptional()
   @IsNumber()
   @Min(0)
   price?: number;

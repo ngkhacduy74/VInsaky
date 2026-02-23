@@ -200,8 +200,8 @@ const ManageProduct = () => {
         setLoading(true);
         setError(null);
 
-        // Fetch products without authentication since the endpoint doesn't require it
-        const response = await api.get("/product/");
+        // Fetch products without authentication since the endpoint doesn't require it (but admin needs all of them to manage)
+        const response = await api.get("/product/?limit=10000");
 
         const productData = Array.isArray(response.data.data)
           ? response.data.data
@@ -439,28 +439,126 @@ const ManageProduct = () => {
   }
 
   return (
-    <Container fluid className="bg-light admin-page" style={{ minHeight: "100vh" }}>
+    <Container fluid className="admin-page" style={{ minHeight: "100vh", backgroundColor: "#f8fafc", padding: 0 }}>
       <HeaderAdmin />
-      <Row>
+      <Row className="g-0">
         <Col
           md="auto"
-          style={{
-            width: "250px",
-            background: "#2c3e50",
-            color: "white",
-            padding: 0,
-          }}
+          style={{ width: "250px", background: "#ffffff", padding: 0 }}
         >
           <Sidebar />
         </Col>
-        <Col style={{ marginLeft: "10px" }} className="p-4">
-          {/* Token Status Display - Similar to AdminDashboard */}
+        <Col className="p-4" style={{ height: "calc(100vh - 76px)", overflowY: "auto" }}>
           
-
+          <style>{`
+            .admin-page-title {
+              font-size: 1.5rem;
+              font-weight: 800;
+              color: #0f172a;
+              letter-spacing: -0.5px;
+            }
+            .admin-card {
+              background: #ffffff;
+              border-radius: 16px;
+              padding: 24px;
+              border: 1px solid rgba(226, 232, 240, 0.8);
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+            }
+            .admin-table {
+              border-collapse: separate;
+              border-spacing: 0;
+              width: 100%;
+            }
+            .admin-table th {
+              background: #f8fafc;
+              color: #475569;
+              font-weight: 600;
+              text-transform: uppercase;
+              font-size: 0.8rem;
+              letter-spacing: 0.5px;
+              padding: 16px;
+              border-bottom: 2px solid #e2e8f0;
+            }
+            .admin-table td {
+              padding: 16px;
+              vertical-align: middle;
+              border-bottom: 1px solid #f1f5f9;
+              color: #1e293b;
+              font-size: 0.95rem;
+            }
+            .admin-table tr:hover td {
+              background: #f8fafc;
+            }
+            .admin-badge-new {
+              background-color: #ecfdf5;
+              color: #10b981;
+              border: 1px solid rgba(16, 185, 129, 0.2);
+              padding: 6px 12px;
+              border-radius: 20px;
+              font-weight: 600;
+              font-size: 0.8rem;
+            }
+            .admin-badge-used {
+              background-color: #fffbeb;
+              color: #f59e0b;
+              border: 1px solid rgba(245, 158, 11, 0.2);
+              padding: 6px 12px;
+              border-radius: 20px;
+              font-weight: 600;
+              font-size: 0.8rem;
+            }
+            .admin-btn-create {
+              background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+              border: none;
+              border-radius: 12px;
+              padding: 10px 24px;
+              font-weight: 600;
+              box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+              transition: all 0.2s;
+            }
+            .admin-btn-create:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+              background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+            }
+            .admin-action-btn {
+              width: 32px;
+              height: 32px;
+              padding: 0;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              border-radius: 8px;
+              transition: all 0.2s;
+              border: none;
+            }
+            .admin-action-btn:hover {
+              transform: scale(1.1);
+            }
+            .admin-filter-container .form-label {
+              font-size: 0.85rem;
+              font-weight: 600;
+              color: #64748b;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            .admin-filter-container .form-control, .admin-filter-container .form-select {
+              border-radius: 10px;
+              border: 1px solid #e2e8f0;
+              padding: 10px 14px;
+              font-size: 0.95rem;
+              transition: all 0.2s;
+            }
+            .admin-filter-container .form-control:focus, .admin-filter-container .form-select:focus {
+              border-color: #3b82f6;
+              box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+          `}</style>
+          
           <div id="manage-products" className="mb-5">
             {/* Error Alert */}
             {error && !error.includes("Session expired") && (
-              <div className="alert alert-warning mb-3" role="alert">
+              <div className="alert alert-warning mb-3" role="alert" style={{ borderRadius: "12px", border: "none" }}>
                 <strong>Warning:</strong> {error}
                 <button
                   className="btn btn-link btn-sm ms-2"
@@ -473,259 +571,248 @@ const ManageProduct = () => {
 
             {/* Header with title and Create button */}
             <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 className="mb-0">Manage Products</h3>
+              <h3 className="admin-page-title mb-0">Quản Lý Sản Phẩm</h3>
               <Button
-                variant="success"
                 size="lg"
                 onClick={handleCreateProduct}
-                className="d-flex align-items-center"
+                className="admin-btn-create d-flex align-items-center text-white"
               >
                 <Plus size={20} className="me-2" />
-                Create Product
+                Thêm Sản Phẩm Mới
               </Button>
             </div>
 
-            {/* Filter Controls */}
-            <Row className="mb-4">
-              <Col md={3}>
-                <Form.Group>
-                  <Form.Label>Search by Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter product name"
-                    value={searchTerm}
-                    onChange={handleSearch}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={2}>
-                <Form.Group>
-                  <Form.Label>Filter by Status</Form.Label>
-                  <Form.Select
-                    value={statusFilter}
-                    onChange={handleStatusChange}
-                  >
-                    <option value="All">All</option>
-                    <option value="New">New</option>
-                    <option value="SecondHand">Second Hand</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group>
-                  <Form.Label>Price Range (VND)</Form.Label>
-                  <Row>
-                    <Col>
-                      <Form.Control
-                        type="number"
-                        placeholder="Min"
-                        value={minPrice}
-                        onChange={handleMinPriceChange}
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Control
-                        type="number"
-                        placeholder="Max"
-                        value={maxPrice}
-                        onChange={handleMaxPriceChange}
-                      />
-                    </Col>
-                  </Row>
-                </Form.Group>
-              </Col>
-              <Col md={3}>
-                <Form.Group>
-                  <Form.Label>Filter by Brand ({brands.length})</Form.Label>
-                  <div style={{ maxHeight: "120px", overflowY: "auto", border: "1px solid #dee2e6", borderRadius: "0.375rem", padding: "8px" }}>
-                    {brands.length > 0 ? (
-                      brands.map((brand) => (
-                        <Form.Check
-                          key={brand}
-                          type="checkbox"
-                          label={brand}
-                          checked={selectedBrands.includes(brand)}
-                          onChange={() => handleBrandChange(brand)}
-                          className="mb-1"
+            {/* Filter Controls Area */}
+            <div className="admin-card mb-4 admin-filter-container">
+              <Row className="g-3 align-items-end">
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Label>Tìm kiếm Tên hiển thị</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Nhập tên sản phẩm..."
+                      value={searchTerm}
+                      onChange={handleSearch}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={2}>
+                  <Form.Group>
+                    <Form.Label>Trạng thái</Form.Label>
+                    <Form.Select
+                      value={statusFilter}
+                      onChange={handleStatusChange}
+                    >
+                      <option value="All">Tất cả</option>
+                      <option value="New">Mới (New)</option>
+                      <option value="SecondHand">Cũ (SecondHand)</option>
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Label>Khoảng giá (VNĐ)</Form.Label>
+                    <Row className="g-2">
+                      <Col>
+                        <Form.Control
+                          type="number"
+                          placeholder="Từ..."
+                          value={minPrice}
+                          onChange={handleMinPriceChange}
                         />
-                      ))
-                    ) : (
-                      <p className="text-muted small mb-0">No brands available.</p>
-                    )}
-                  </div>
-                  {selectedBrands.length > 0 && (
-                    <small className="text-info">
-                      Selected: {selectedBrands.join(", ")}
-                    </small>
-                  )}
-                </Form.Group>
-              </Col>
-              <Col md={1} className="d-flex align-items-end">
-                <Button variant="secondary" onClick={handleClearFilters}>
-                  Clear
-                </Button>
-              </Col>
-            </Row>
-
-            {/* Products Summary */}
-            <div className="mb-3">
-              <small className="text-muted">
-                Showing {filteredProducts.length} of {products.length} products
-                {brands.length > 0 && ` • ${brands.length} unique brands available`}
-              </small>
+                      </Col>
+                      <Col>
+                        <Form.Control
+                          type="number"
+                          placeholder="Đến..."
+                          value={maxPrice}
+                          onChange={handleMaxPriceChange}
+                        />
+                      </Col>
+                    </Row>
+                  </Form.Group>
+                </Col>
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Label>Thương hiệu ({brands.length})</Form.Label>
+                    <div style={{ maxHeight: "80px", overflowY: "auto", border: "1px solid #e2e8f0", borderRadius: "10px", padding: "8px", background: "#f8fafc" }}>
+                      {brands.length > 0 ? (
+                        brands.map((brand) => (
+                          <Form.Check
+                            key={brand}
+                            type="checkbox"
+                            label={brand}
+                            checked={selectedBrands.includes(brand)}
+                            onChange={() => handleBrandChange(brand)}
+                            className="mb-1"
+                            style={{ fontSize: "0.9rem" }}
+                          />
+                        ))
+                      ) : (
+                        <p className="text-muted small mb-0">Không có dữ liệu.</p>
+                      )}
+                    </div>
+                  </Form.Group>
+                </Col>
+                <Col md={1}>
+                  <Button variant="light" onClick={handleClearFilters} className="w-100" style={{ borderRadius: "10px", border: "1px solid #e2e8f0", color: "#64748b", fontWeight: "600" }}>
+                    Xóa
+                  </Button>
+                </Col>
+              </Row>
             </div>
 
-            {filteredProducts.length === 0 ? (
-              <div className="text-center py-5">
-                <Package size={48} className="text-muted mb-3" />
-                <p className="text-muted">No products found.</p>
-                {products.length === 0 && !error && (
-                  <Button
-                    variant="primary"
-                    onClick={handleCreateProduct}
-                    className="mt-2"
-                  >
-                    Create your first product
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <>
-                <Table
-                  striped
-                  bordered
-                  hover
-                  className="shadow-sm"
-                  style={{ borderRadius: "15px", overflow: "hidden" }}
-                >
-                  <thead className="bg-primary text-white">
-                    <tr>
-                      <th>#</th>
-                      <th>Tên</th>
-                      <th>Thương hiệu</th>
-                      <th>Giá tiền</th>
-                      <th>Số lượng</th>
-                      <th>Số điện thoại liên hệ</th>
-                      <th>Trạng thái</th>
-                      <th>Chỉnh sửa</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {productsToShow.map((product, index) => (
-                      <tr key={product.id}>
-                        <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                        <td>{product.name || "N/A"}</td>
-                        <td>{product.brand || "N/A"}</td>
-                        <td>
-                          {product.price
-                            ? `${parseFloat(product.price).toLocaleString(
-                                "vi-VN"
-                              )} VND`
-                            : "N/A"}
-                        </td>
-                        <td>
-                          {product.quantity}
-                        </td>
-                        <td>
-                          {product.business_phone ? product.business_phone : "N/A"}
-                        </td>
-                        <td>
-                          <span
-                            className={`badge ${
-                              product.status === "New"
-                                ? "bg-success"
-                                : "bg-warning"
-                            }`}
-                          >
-                            {product.status || "N/A"}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="d-flex gap-2">
-                            <Button
-                              variant="info"
-                              size="sm"
-                              onClick={() => handleViewDetails(product.id)}
-                              title="View Details"
-                            >
-                              <Eye size={16} />
-                            </Button>
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              onClick={() => navigate(`/update-product/${product.id}`)}
-                              title="Sửa sản phẩm"
-                            >
-                              <Edit size={16} />
-                            </Button>
-                            <Button
-                              variant={
-                                product.status === "New" ? "warning" : "success"
-                              }
-                              size="sm"
-                              onClick={() =>
-                                handleToggleStatus(product.id, product.status)
-                              }
-                              title={
-                                product.status === "New"
-                                  ? "Đổi thành Second Hand"
-                                  : "Đổi thành New"
-                              }
-                            >
-                              {product.status === "New" ? (
-                                <EyeOff size={16} />
-                              ) : (
-                                <Check size={16} />
-                              )}
-                            </Button>
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              onClick={() => handleDeleteProduct(product)}
-                              title="Delete Product"
-                            >
-                              <Trash2 size={16} />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-                {/* Pagination UI */}
-                <div className="d-flex justify-content-center align-items-center my-3">
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </Button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            {/* Products Summary */}
+            <div className="mb-3 d-flex justify-content-between align-items-center">
+              <span className="text-muted" style={{ fontSize: "0.95rem" }}>
+                Đang hiển thị <strong className="text-dark">{filteredProducts.length}</strong> / {products.length} sản phẩm
+              </span>
+            </div>
+
+            {/* Table Area */}
+            <div className="admin-card p-0" style={{ overflow: "hidden" }}>
+              {filteredProducts.length === 0 ? (
+                <div className="text-center py-5">
+                  <Package size={48} className="text-muted mb-3 opacity-50" />
+                  <p className="text-muted" style={{ fontSize: "1.1rem" }}>Không tìm thấy sản phẩm nào.</p>
+                  {products.length === 0 && !error && (
                     <Button
-                      key={page}
-                      variant={page === currentPage ? "primary" : "outline-primary"}
-                      size="sm"
-                      className="mx-1"
-                      onClick={() => setCurrentPage(page)}
+                      className="mt-3 admin-btn-create text-white"
+                      onClick={handleCreateProduct}
                     >
-                      {page}
+                      Thêm sản phẩm đầu tiên
                     </Button>
-                  ))}
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    className="ms-2"
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages || totalPages === 0}
-                  >
-                    Next
-                  </Button>
+                  )}
                 </div>
-              </>
-            )}
+              ) : (
+                <div className="table-responsive">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: "50px", textAlign: "center" }}>#</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Thương hiệu</th>
+                        <th>Giá tiền</th>
+                        <th style={{ textAlign: "center" }}>Kho</th>
+                        <th>Liên hệ</th>
+                        <th style={{ textAlign: "center" }}>Trạng thái</th>
+                        <th style={{ textAlign: "center" }}>Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {productsToShow.map((product, index) => (
+                        <tr key={product.id}>
+                          <td style={{ textAlign: "center", color: "#64748b" }}>
+                            {(currentPage - 1) * itemsPerPage + index + 1}
+                          </td>
+                          <td className="fw-medium">{product.name || "N/A"}</td>
+                          <td>
+                            <span style={{ background: "#f8fafc", padding: "4px 8px", borderRadius: "6px", fontSize: "0.85rem", color: "#475569", border: "1px solid #e2e8f0" }}>
+                              {product.brand || "N/A"}
+                            </span>
+                          </td>
+                          <td className="fw-semibold text-primary">
+                            {product.price ? `${parseFloat(product.price).toLocaleString("vi-VN")} đ` : "N/A"}
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            {product.quantity}
+                          </td>
+                          <td style={{ color: "#64748b" }}>
+                            {product.business_phone ? product.business_phone : "N/A"}
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            <span className={product.status === "New" ? "admin-badge-new" : "admin-badge-used"}>
+                              {product.status || "N/A"}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="d-flex justify-content-center gap-2">
+                              <button
+                                className="admin-action-btn bg-soft-info"
+                                onClick={() => handleViewDetails(product.id)}
+                                title="Xem chi tiết"
+                              >
+                                <Eye size={16} color="#0ea5e9" />
+                              </button>
+                              <button
+                                className="admin-action-btn bg-soft-primary"
+                                onClick={() => navigate(`/update-product/${product.id}`)}
+                                title="Sửa sản phẩm"
+                              >
+                                <Edit size={16} color="#2563eb" />
+                              </button>
+                              <button
+                                className={`admin-action-btn ${product.status === "New" ? "bg-soft-warning" : "bg-soft-success"}`}
+                                onClick={() => handleToggleStatus(product.id, product.status)}
+                                title={product.status === "New" ? "Đổi thành Second Hand" : "Đổi thành New"}
+                              >
+                                {product.status === "New" ? (
+                                  <EyeOff size={16} color="#d97706" />
+                                ) : (
+                                  <Check size={16} color="#059669" />
+                                )}
+                              </button>
+                              <button
+                                className="admin-action-btn"
+                                style={{ background: "#fee2e2" }}
+                                onClick={() => handleDeleteProduct(product)}
+                                title="Xóa Sản Phẩm"
+                              >
+                                <Trash2 size={16} color="#ef4444" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  
+                  {/* Modern Pagination */}
+                  <div className="d-flex justify-content-between align-items-center p-4 border-top">
+                    <span className="text-muted small">Trang {currentPage} / {totalPages || 1}</span>
+                    <div className="d-flex gap-2">
+                      <Button
+                        variant="light"
+                        size="sm"
+                        style={{ borderRadius: "8px", fontWeight: "600", color: "#475569" }}
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                      >
+                        Trước
+                      </Button>
+                      <div className="d-flex gap-1">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <Button
+                            key={page}
+                            variant={page === currentPage ? "primary" : "light"}
+                            size="sm"
+                            style={{ 
+                              borderRadius: "8px", 
+                              width: "32px", 
+                              fontWeight: "600",
+                              background: page === currentPage ? "#3b82f6" : "",
+                              border: page === currentPage ? "none" : "1px solid #e2e8f0"
+                            }}
+                            onClick={() => setCurrentPage(page)}
+                          >
+                            {page}
+                          </Button>
+                        ))}
+                      </div>
+                      <Button
+                        variant="light"
+                        size="sm"
+                        style={{ borderRadius: "8px", fontWeight: "600", color: "#475569" }}
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages || totalPages === 0}
+                      >
+                        Sau
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </Col>
       </Row>

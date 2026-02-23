@@ -169,7 +169,7 @@ const ProductBrowser = () => {
   };
 
   // Fetch products from API
-  const fetchProducts = async (searchFilters = filters) => {
+  const fetchProducts = async (searchFilters = filters, page = currentPage) => {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams();
@@ -178,20 +178,36 @@ const ProductBrowser = () => {
           queryParams.append(key, value);
         }
       });
+      // Add pagination params to query
+      const skip = (page - 1) * productsPerPage;
+      queryParams.append("skip", skip);
+      queryParams.append("limit", productsPerPage);
+
       const response = await authApiClient.get(
         `/product?${queryParams.toString()}`
       );
-      const productData = Array.isArray(response.data.data)
-        ? response.data.data
-        : [];
+      
+      let productData = [];
+      let totalItems = 0;
+      
+      if (response.data && response.data.data) {
+        if (Array.isArray(response.data.data)) {
+          productData = response.data.data;
+          totalItems = productData.length;
+        } else if (response.data.data.items && Array.isArray(response.data.data.items)) {
+          productData = response.data.data.items;
+          totalItems = response.data.data.total || productData.length;
+        }
+      }
+      
       setProducts(productData);
+      setPagination({
+        totalItems: totalItems,
+        currentPage: currentPage,
+        totalPages: Math.ceil(totalItems / productsPerPage) || 1,
+      });
       // Danh mục cố định
       setCategories(fixedCategories);
-      // Thương hiệu tối đa 10
-      const uniqueBrands = [
-        ...new Set(productData.map((p) => p.brand).filter(Boolean)),
-      ];
-      setBrands(uniqueBrands.slice(0, 10));
     } catch (err) {
       console.error("Fetch Error:", err);
       setError("Không thể tải danh sách sản phẩm. Vui lòng thử lại sau.");
@@ -200,6 +216,21 @@ const ProductBrowser = () => {
       setLoading(false);
     }
   };
+
+  // Lấy tất cả thương hiệu một lần khi load trang
+  useEffect(() => {
+    const fetchAllBrands = async () => {
+      try {
+        const response = await authApiClient.get("/product/brands");
+        if (response.data && response.data.data) {
+          setBrands(response.data.data);
+        }
+      } catch (err) {
+        console.error("Lỗi khi tải danh sách thương hiệu:", err);
+      }
+    };
+    fetchAllBrands();
+  }, []);
 
   // Khi searchParams thay đổi, đồng bộ filters và filterDraft
   useEffect(() => {
@@ -213,7 +244,8 @@ const ProductBrowser = () => {
     };
     setFilters(newFilters);
     setFilterDraft(newFilters);
-    fetchProducts(newFilters);
+    setCurrentPage(1);
+    fetchProducts(newFilters, 1);
   }, [searchParams]);
 
   // Handle search from SearchWithAutocomplete
@@ -233,19 +265,18 @@ const ProductBrowser = () => {
       params.delete("search");
     }
     setSearchParams(params);
-
-    // Fetch products with new search query
-    fetchProducts(newFilters);
   };
 
-  // When rendering, use products directly for pagination
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct
-  );
-  const totalPages = Math.ceil(products.length / productsPerPage);
+  // Server-side pagination is now used, so currentProducts is just the fetched array
+  const currentProducts = products;
+  const totalPages = pagination.totalPages || 1;
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    // Cuộn lên đẩu grid sản phẩm khi chuyển trang
+    window.scrollTo({ top: 300, behavior: "smooth" });
+    fetchProducts(filters, newPage);
+  };
 
   // Thay đổi filterDraft khi input filter thay đổi
   const handleFilterDraftChange = (key, value) => {
@@ -401,35 +432,140 @@ const ProductBrowser = () => {
         <div className="content-wrapper" style={{ marginTop: "70px" }}>
           <div className="page-content">
             <Container>
-              <div className="toolbox">
-                <div className="toolbox-left flex-grow-1">
-                  <div className="search-wrapper">
-                    <SearchWithAutocomplete
-                      initialValue={searchParams.get("search") || ""}
-                      onSearch={handleSearch}
-                      placeholder="Tìm kiếm sản phẩm..."
-                    />
-                  </div>
+              {/* Premium Search & Filter Section */}
+              <div className="premium-filter-section mb-5 mt-3">
+                <style>{`
+                  .premium-filter-section {
+                    position: relative;
+                  }
+                  .premium-filter-header {
+                    margin-bottom: 2rem;
+                  }
+                  .premium-filter-header h2 {
+                    font-weight: 800;
+                    color: #1e293b;
+                    letter-spacing: -0.5px;
+                  }
+                  .premium-filter-card {
+                    background: #ffffff;
+                    border-radius: 20px;
+                    padding: 1.5rem;
+                    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+                    border: 1px solid #f1f5f9;
+                    position: relative;
+                    z-index: 10;
+                  }
+                  .filter-label {
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    color: #64748b;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 0.5rem;
+                    display: block;
+                  }
+                  .premium-select {
+                    border: 1px solid #e2e8f0;
+                    border-radius: 10px;
+                    padding: 0.6rem 1rem;
+                    font-size: 0.95rem;
+                    color: #334155;
+                    transition: all 0.2s;
+                    background-color: #f8fafc;
+                    cursor: pointer;
+                  }
+                  .premium-select:focus {
+                    border-color: #3b82f6;
+                    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                    background-color: #ffffff;
+                  }
+                  .premium-input {
+                    border: 1px solid #e2e8f0;
+                    border-radius: 10px;
+                    padding: 0.6rem 1rem;
+                    font-size: 0.95rem;
+                    color: #334155;
+                    transition: all 0.2s;
+                    background-color: #f8fafc;
+                  }
+                  .premium-input:focus {
+                    border-color: #3b82f6;
+                    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                    background-color: #ffffff;
+                  }
+                  .btn-filter-action {
+                    border-radius: 10px;
+                    padding: 0.6rem 1.5rem;
+                    font-weight: 600;
+                    transition: all 0.3s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    height: 100%;
+                  }
+                  .btn-apply {
+                    background: linear-gradient(135deg, #0d6efd, #2563eb);
+                    color: white;
+                    border: none;
+                    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+                  }
+                  .btn-apply:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 16px rgba(13, 110, 253, 0.3);
+                  }
+                  .btn-clear {
+                    background: #f1f5f9;
+                    color: #475569;
+                    border: 1px solid #e2e8f0;
+                  }
+                  .btn-clear:hover {
+                    background: #e2e8f0;
+                    color: #1e293b;
+                  }
+                  .main-search-wrapper {
+                    border-radius: 12px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+                    background: white;
+                    padding: 8px;
+                    margin-bottom: 2rem;
+                    border: 1px solid #e2e8f0;
+                  }
+                  .main-search-wrapper .react-autosuggest__input {
+                    border: none !important;
+                    font-size: 1.1rem !important;
+                    padding: 12px 20px !important;
+                    box-shadow: none !important;
+                    background: transparent !important;
+                  }
+                `}</style>
+                
+                <div className="text-center premium-filter-header">
+                  <h2>Khám Phá Sản Phẩm</h2>
+                  <p className="text-muted">Tìm kiếm thiết bị công nghiệp phù hợp với nhu cầu của bạn</p>
                 </div>
-              </div>
-              {/* Filter Bar Horizontal */}
-              <div className="card mb-3">
-                <div className="card-body">
-                  <div className="row align-items-end g-2">
-                    {/* Search */}
-                    <div className="col-md-2">
-                      <label className="form-label">Tìm kiếm</label>
+
+                {/* Main Search Bar */}
+                <div className="row justify-content-center">
+                  <div className="col-lg-8">
+                    <div className="main-search-wrapper">
                       <SearchWithAutocomplete
-                        initialValue={filterDraft.search}
-                        onSearch={handleSidebarSearch}
-                        placeholder="Tìm sản phẩm..."
+                        initialValue={searchParams.get("search") || ""}
+                        onSearch={handleSearch}
+                        placeholder="Nhập tên sản phẩm bạn đang tìm kiếm..."
                       />
                     </div>
+                  </div>
+                </div>
+
+                {/* Filter Grid */}
+                <div className="premium-filter-card">
+                  <div className="row g-3 align-items-end">
                     {/* Category Filter */}
-                    <div className="col-md-2">
-                      <label className="form-label">Danh mục</label>
+                    <div className="col-md-3">
+                      <label className="filter-label">Danh mục</label>
                       <select
-                        className="form-select"
+                        className="form-select premium-select"
                         value={filterDraft.category}
                         onChange={(e) => handleFilterDraftChange("category", e.target.value)}
                       >
@@ -441,15 +577,16 @@ const ProductBrowser = () => {
                         ))}
                       </select>
                     </div>
+
                     {/* Brand Filter */}
                     <div className="col-md-2">
-                      <label className="form-label">Thương hiệu</label>
+                      <label className="filter-label">Thương hiệu</label>
                       <select
-                        className="form-select"
+                        className="form-select premium-select"
                         value={filterDraft.brand}
                         onChange={(e) => handleFilterDraftChange("brand", e.target.value)}
                       >
-                        <option value="">Tất cả thương hiệu</option>
+                        <option value="">Tất cả</option>
                         {brands.map((brand) => (
                           <option key={brand} value={brand}>
                             {brand}
@@ -457,51 +594,57 @@ const ProductBrowser = () => {
                         ))}
                       </select>
                     </div>
+
                     {/* Price Range */}
-                    <div className="col-md-2">
-                      <label className="form-label">Khoảng giá</label>
-                      <div className="d-flex gap-1">
+                    <div className="col-md-3">
+                      <label className="filter-label">Khoảng giá (VNĐ)</label>
+                      <div className="d-flex gap-2">
                         <input
                           type="number"
-                          className="form-control"
+                          className="form-control premium-input"
                           placeholder="Từ"
                           value={filterDraft.minPrice}
                           onChange={(e) => handleFilterDraftChange("minPrice", e.target.value)}
                         />
+                        <span className="d-flex align-items-center text-muted">-</span>
                         <input
                           type="number"
-                          className="form-control"
+                          className="form-control premium-input"
                           placeholder="Đến"
                           value={filterDraft.maxPrice}
                           onChange={(e) => handleFilterDraftChange("maxPrice", e.target.value)}
                         />
                       </div>
                     </div>
+
                     {/* Status Filter */}
                     <div className="col-md-2">
-                      <label className="form-label">Tình trạng</label>
+                      <label className="filter-label">Tình trạng</label>
                       <select
-                        className="form-select"
+                        className="form-select premium-select"
                         value={filterDraft.status}
                         onChange={(e) => handleFilterDraftChange("status", e.target.value)}
                       >
-                        <option value="">Tất cả</option>
-                        <option value="New">Mới</option>
-                        <option value="SecondHand">Đã qua sử dụng</option>
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="New">Hàng Mới</option>
+                        <option value="SecondHand">Chưa qua sử dụng</option>
                       </select>
                     </div>
-                    {/* Nút Lọc & Xóa */}
-                    <div className="col-md-2 d-flex gap-1">
-                      <button className="btn btn-primary flex-fill" onClick={handleApplyFilters}>
-                        <Filter size={16} className="me-1" /> Lọc
-                      </button>
-                      <button
-                        className="btn btn-outline-secondary flex-fill"
-                        onClick={clearFilters}
-                        title="Xóa bộ lọc"
-                      >
-                        <X size={14} />
-                      </button>
+
+                    {/* Actions */}
+                    <div className="col-md-2">
+                      <div className="d-flex gap-2 h-100">
+                        <button className="btn btn-filter-action btn-apply flex-grow-1" onClick={handleApplyFilters}>
+                          <Filter size={18} /> Lọc
+                        </button>
+                        <button
+                          className="btn btn-filter-action btn-clear"
+                          onClick={clearFilters}
+                          title="Xóa bộ lọc"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -692,7 +835,7 @@ const ProductBrowser = () => {
                           >
                             <button
                               className="page-link"
-                              onClick={() => setCurrentPage(currentPage - 1)}
+                              onClick={() => handlePageChange(currentPage - 1)}
                               disabled={currentPage === 1}
                             >
                               <ChevronLeft size={16} />
@@ -709,7 +852,7 @@ const ProductBrowser = () => {
                               >
                                 <button
                                   className="page-link"
-                                  onClick={() => setCurrentPage(pageNumber)}
+                                  onClick={() => handlePageChange(pageNumber)}
                                 >
                                   {pageNumber}
                                 </button>
@@ -723,7 +866,7 @@ const ProductBrowser = () => {
                           >
                             <button
                               className="page-link"
-                              onClick={() => setCurrentPage(currentPage + 1)}
+                              onClick={() => handlePageChange(currentPage + 1)}
                               disabled={currentPage === totalPages}
                             >
                               <ChevronRight size={16} />
@@ -757,35 +900,41 @@ const ProductBrowser = () => {
               height: 240px;
               object-fit: cover;
               object-position: center;
-              transition: transform 0.3s ease;
+              transition: transform 0.4s ease;
+              border-top-left-radius: 16px;
+              border-top-right-radius: 16px;
             }
             .product-browser:hover .card-img-top {
-              transform: scale(1.05);
+              transform: scale(1.08);
             }
             .product-browser .card {
               height: 100%;
               min-height: 420px;
-              transition: box-shadow 0.3s ease;
-              border: 1px solid #e9ecef;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+              border: 1px solid #f1f5f9;
+              border-radius: 16px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.03);
               display: flex;
               flex-direction: column;
+              overflow: hidden;
+              background-color: #ffffff;
             }
             .product-browser:hover .card {
-              box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-              border-color: #007bff;
+              box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12);
+              border-color: #e2e8f0;
             }
             .product-browser {
-              transition: transform 0.2s ease-in-out;
+              transition: transform 0.3s ease-in-out;
             }
             .product-browser:hover {
-              transform: translateY(-2px);
+              transform: translateY(-6px);
             }
             .product-browser .card-body {
               display: flex;
               flex-direction: column;
               min-height: 180px;
               justify-content: flex-start;
+              padding: 1.25rem;
             }
             .product-browser .card-title {
               display: -webkit-box;
@@ -793,16 +942,39 @@ const ProductBrowser = () => {
               -webkit-box-orient: vertical;
               overflow: hidden;
               min-height: 2.6em;
-              line-height: 1.3;
+              line-height: 1.4;
               margin-bottom: 0.5rem;
+              font-weight: 700;
+              color: #1e293b;
+            }
+            .product-browser .card-title:hover {
+              color: #0d6efd;
             }
             .product-browser .card-text.text-muted.small {
               min-height: 1.5em;
               margin-bottom: 0.5rem;
               display: block;
+              color: #64748b !important;
+              font-weight: 500;
+            }
+            .product-browser .fw-bold.text-primary {
+              font-size: 1.15rem;
+              color: #ef4444 !important; /* Update price color to a more modern red */
             }
             .product-browser .d-flex.gap-2.mt-3 {
-              margin-top: auto;
+              margin-top: auto !important;
+            }
+            .product-browser .btn-primary {
+              border-radius: 10px;
+              font-weight: 600;
+              background: #f1f5f9;
+              border: none;
+              color: #3b82f6;
+              transition: all 0.2s;
+            }
+            .product-browser .btn-primary:hover {
+              background: #3b82f6;
+              color: #ffffff;
             }
             .product-browser .card-img-top[alt="product placeholder"] {
               background-color: #f8f9fa;

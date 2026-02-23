@@ -1,10 +1,14 @@
 import React from "react";
 import { useFavorite } from "../hooks/useFavorite";
+import { useAuth } from "../hooks/useAuth";
 import "./FavoriteButton.css";
 import { toast } from "react-toastify";
 
 const FavoriteButton = ({ productId, className = "" }) => {
+  const { user } = useAuth();
   const { isFavorite, loading, toggleFavorite } = useFavorite(productId);
+
+  if (!user) return null;
 
   const handleToggleFavorite = async () => {
     try {

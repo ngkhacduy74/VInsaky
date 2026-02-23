@@ -19,6 +19,9 @@ export class PublicUserDto {
 
   @Expose()
   phone?: string;
+
+  @Expose()
+  is_active?: boolean;
 }
 
 export class DeleteUserDto {

@@ -21,6 +21,9 @@ export class ProductResponseDto {
   brand: string;
 
   @Expose()
+  category: string;
+
+  @Expose()
   price: number;
 
   @Expose()

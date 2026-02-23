@@ -5,196 +5,282 @@ const Footer = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Placeholder for form submission logic
     console.log('Đăng ký nhận bản tin:', email);
     setEmail('');
   };
 
-  const footerStyle = {
-    backgroundColor: '#ffffff',
-    color: '#333333',
-    paddingTop: '3rem',
-    paddingBottom: '1rem',
-    borderTop: '1px solid #e9ecef'
-  };
-
-  const footerBottomStyle = {
-    backgroundColor: '#f8f9fa',
-    color: '#6c757d',
-    padding: '1rem 0',
-    borderTop: '1px solid #e9ecef'
-  };
-
-  const linkStyle = {
-    color: '#6c757d',
-    textDecoration: 'none',
-    transition: 'color 0.3s ease'
-  };
-
-  const linkHoverStyle = {
-    color: '#007bff'
-  };
-
   return (
-    <>
-      <footer style={footerStyle}>
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-3 col-md-6 col-sm-6">
-              <div className="footer-menu">
-                <img src="/images/Logo.png" alt="Vinsaky Logo" style={{ maxWidth: '150px', height: 'auto', marginBottom: '1rem' }} />
-                <p style={{ marginBottom: '1.5rem', lineHeight: '1.6' }}>
-                  Chúng tôi cung cấp các sản phẩm chất lượng cao với dịch vụ khách hàng tốt nhất.
-                </p>
-                <div className="social-links mt-4">
-                  <h6 style={{ marginBottom: '1rem', color: '#007bff' }}>Theo dõi chúng tôi</h6>
-                  <ul className="d-flex list-unstyled gap-2">
-                    <li>
-                      <a href="#" className="btn btn-outline-primary" style={{ borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                          <path fill="currentColor" d="M15.12 5.32H17V2.14A26.11 26.11 0 0 0 14.26 2c-2.72 0-4.58 1.66-4.58 4.7v2.62H6.61v3.56h3.07V22h3.68v-9.12h3.06l.46-3.56h-3.52V7.05c0-1.05.28-1.73 1.76-1.73Z" />
-                        </svg>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#" className="btn btn-outline-primary" style={{ borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                          <path fill="currentColor" d="M22.991 3.95a1 1 0 0 0-1.51-.86a7.48 7.48 0 0 1-1.874.794a5.152 5.152 0 0 0-3.374-1.242a5.232 5.232 0 0 0-5.223 5.063a11.032 11.032 0 0 1-6.814-3.924a1.012 1.012 0 0 0-.857-.365a.999.999 0 0 0-.785.5a5.276 5.276 0 0 0-.242 4.769l-.002.001a1.041 1.041 0 0 0-.496.89a3.042 3.042 0 0 0 .027.439a5.185 5.185 0 0 0 1.568 3.312a.998.998 0 0 0-.066.77a5.204 5.204 0 0 0 2.362 2.922a7.465 7.465 0 0 1-3.59.448A1 1 0 0 0 1.45 19.3a12.942 12.942 0 0 0 7.01 2.061a12.788 12.788 0 0 0 12.465-9.363a12.822 12.822 0 0 0 .535-3.646l-.001-.2a5.77 5.77 0 0 0 1.532-4.202Zm-3.306 3.212a.995.995 0 0 0-.234.702c.01.165.009.331.009.488a10.824 10.824 0 0 1-.454 3.08a10.685 10.685 0 0 1-10.546 7.93a10.938 10.938 0 0 1-2.55-.301a9.48 9.48 0 0 0 2.942-1.564a1 1 0 0 0-.602-1.786a3.208 3.208 0 0 1-2.214-.935q.224-.042.445-.105a1 1 0 0 0-.08-1.943a3.198 3.198 0 0 1-2.25-1.726a5.3 5.3 0 0 0 .545.046a1.02 1.02 0 0 0 .984-.696a1 1 0 0 0-.4-1.137a3.196 3.196 0 0 1-1.425-2.673c0-.066.002-.133.006-.198a13.014 13.014 0 0 0 8.21 3.48a1.02 1.02 0 0 0 .817-.36a1 1 0 0 0 .206-.867a3.157 3.157 0 0 1-.087-.729a3.23 3.23 0 0 1 3.226-3.226a3.184 3.184 0 0 1 2.345 1.02"></path>
-                        </svg>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#" className="btn btn-outline-primary" style={{ borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                          <path fill="currentColor" d="M23 9.71a8.5 8.5 0 0 0-.91-4.13a2.92 2.92 0 0 0-1.72-1A78.36 78.36 0 0 0 12 4.27a78.45 78.45 0 0 0-8.34.3a2.87 2.87 0 0 0-1.46..ImmutableMap74c-.9.83-1 2.25-1.1 3.45a48.29 48.29 0 0 0 0 6.48a9.55 9.55 0 0 0 .3 2a3.14 3.14 0 0 0 .71 1.36a2.86 2.86 0 0 0 1.49.78a45.18 45.18 0 0 0 6.5.33c3.5.05 6.57 0 10.2-.28a2.88 2.88 0 0 0 1.53-.78a2.49 2.49 0 0 0 .61-1a10.58 10.58 0 0 0 .52-3.4c.04-.56.04-3.94.04-4.54ZM9.74 14.85V8.66l5.92 3.11c-1.66.92-3.85 1.96-5.92 3.08Z" />
-                        </svg>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#" className="btn btn-outline-primary" style={{ borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                          <path fill="currentColor" d="M17.34 5.46a1.2 1.2 0 1 0 1.2 1.2a1.2 1.2 0 0 0-1.2-1.2Zm4.6 2.42a7.59 7.59 0 0 0-.46-2.43a4.94 4.94 0 0 0-1.16-1.77a4.7 4.7 0 0 0-1.77-1.15a7.3 7.3 0 0 0-2.43-.47C15.06 2 14.72 2 12 2s-3.06 0-4.12.06a7.3 7.3 0 0 0-2.43.47a4.78 4.78 0 0 0-1.77 1.15a4.7 4.7 0 0 0-1.15 1.77a7.3 7.3 0 0 0-.47 2.43C2 8.94 2 9.28 2 12s0 3.06.06 4.12a7.3 7.3 0 0 0 .47 2.43a4.7 4.7 0 0 0 1.15 1.77a4.78 4.78 0 0 0 1.77 1.15a7.3 7.3 0 0 0 2.43.47C8.94 22 9.28 22 12 22s3.06 0 4.12-.06a7.3 7.3 0 0 0 2.43-.47a4.7 4.7 0 0 0 1.77-1.15a4.85 4.85 0 0 0 1.16-1.77a7.59 7.59 0 0 0 .46-2.43c0-1.06.06-1.4.06-4.12s0-3.06-.06-4.12ZM20.14 16a5.61 5.61 0 0 1-.34 1.86a3.06 3.06 0 0 1-.75 1.15a3.19 3.19 0 0 1-1.15.75a5.61 5.61 0 0 1-1.86.34c-1 .05-1.37.06-4 .06s-3 0-4-.06a5.73 5.73 0 0 1-1.94-.3a3.27 3.27 0 0 1-1.1-.75a3 3 0 0 1-.74-1.15a5.54 5.54 0 0 1-.4-1.9c0-1-.06-1.37-.06-4s0-3 .06-4a5.54 5.54 0 0 1 .35-1.9A3 3 0 0 1 5 5a3.14 3.14 0 0 1 1.1-.8A5.73 5.73 0 0 1 8 3.86c1 0 1.37-.06 4-.06s3 0 4 .06a5.61 5.61 0 0 1 1.86.34a3.06 3.06 0 0 1 1.19.8a3.06 3.06 0 0 1 .75 1.1a5.61 5.61 0 0 1 .34 1.9c.05 1 .06 1.37.06 4s-.01 3-.06 4ZM12 6.87A5.13 5.13 0 1 0 17.14 12A5.12 5.12 0 0 0 12 6.87Zm0 8.46A3.33 3.33 0 1 1 15.33 12A3.33 3.33 0 0 1 12 15.33Z" />
-                        </svg>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#" className="btn btn-outline-primary" style={{ borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                          <path fill="currentColor" d="M1.04 17.52q.1-.16.32-.02a21.308 21.308 0 0 0 10.88 2.9a21.524 21.524 0 0 0 7.74-1.46q.1-.04.29-.12t.27-.12a.356.356 0 0 1 .47.12q.17.24-.11.44q-.36.26-.92.6a14.99 14.99 0 0 1-3.84 1.58A16.175 16.175 0 0 1 12 22a16.017 16.017 0 0 1-5.9-1.09a16.246 16.246 0 0 1-4.98-3.07a.273.273 0 0 1-.12-.2a.215.215 0 0 1 .04-.12Zm6.02-5.7a4.036 4.036 0 0 1 .68-2.36A4.197 4.197 0 0 1 9.6 7.98a10.063 10.063 0 0 1 2.66-.66q.54-.06 1.76-.16v-.34a3.562 3.562 0 0 0-.28-1.72a1.5 1.5 0 0 0-1.32-.6h-.16a2.189 2.189 0 0 0-1.14.42a1.64 1.64 0 0 0-.62 1a.508.508 0 0 1-.4.46L7.8 6.1q-.34-.08-.34-.36a.587.587 0 0 1 .02-.14a3.834 3.834 0 0 1 1.67-2.64A6.268 6.268 0 0 1 12.26 2h.5a5.054 5.054 0 0 1 3.56 1.18a3.81 3.81 0 0 1 .37.43a3.875 3.875 0 0 1 .27.41a2.098 2.098 0 0 1 .18.52q.08.34.12.47a2.856 2.856 0 0 1 .06.56q.02.43.02.51v4.84a2.868 2.868 0 0 0 .15.95a2.475 2.475 0 0 0 .29.62q.14.19.46.61a.599.599 0 0 1 .12.32a.346.346 0 0 1-.16.28q-1.66 1.44-1.8 1.56a.557.557 0 0 1-.58.04q-.28-.24-.49-.46t-.3-.32a4.466 4.466 0 0 1-.29-.39q-.20-.29-.28-.39a4.91 4.91 0 0 1-2.2 1.52a6.038 6.038 0 0 1-1.68.2a3.505 3.505 0 0 1-2.53-.95a3.553 3.553 0 0 1-.99-2.69Zm3.44-.4a1.895 1.895 0 0 0 .39 1.25a1.294 1.294 0 0 0 1.05.47a1.022 1.022 0 0 0 .17-.02a1.022 1.022 0 0 1 .15-.02a2.033 2.033 0 0 0 1.3-1.08a3.13 3.13 0 0 0 .33-.83a3.8 3.8 0 0 0 .12-.73q.01-.28.01-.92v-.5a7.287 7.287 0 0 0-1.76.16a2.144 2.144 0 0 0-1.76 2.22Zm8.4 6.44a.626.626 0 0 1 .12-.16a3.14 3.14 0 0 1 .96-.46a6.52 6.52 0 0 1 1.48-.22a1.195 1.195 0 0 1 .38.02q.9.08 1.08.3a.655.655 0 0 1 .08.36v.14a4.56 4.56 0 0 1-.38 1.65a3.84 3.84 0 0 1-1.06 1.53a.302.302 0 0 1-.18.08a.177.177 0 0 1-.08-.02q-.12-.06-.06-.02a7.2 7.632 7.632 0 0 0 .74-2.42a.513.513 0 0 0-.08-.32q-.2-.24-1.12-.24q-.34 0-.8.04q-.5.06-.92.12a.232.232 0 0 1-.16-.04a.065.065 0 0 1-.02-.08a.153.153 0 0 1 .02-.06Z" />
-                        </svg>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+    <footer className="footer-elegant">
+      <style>{`
+        .footer-elegant {
+          background-color: #ffffff;
+          padding: 80px 0 40px;
+          border-top: 1px solid rgba(226, 232, 240, 0.8);
+          font-family: inherit;
+        }
 
-            <div className="col-md-2 col-sm-6">
-              <div className="footer-menu">
-                <h5 className="widget-title" style={{ color: '#007bff', marginBottom: '1.5rem', fontSize: '1.1rem' }}>Về Chúng Tôi</h5>
-                <ul className="menu-list list-unstyled">
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Giới thiệu</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Điều khoản</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Tạp chí của chúng tôi</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Cơ hội nghề</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Chương trình liên kết</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Báo chí Vinsaky</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+        .footer-logo {
+          max-width: 160px;
+          height: auto;
+          margin-bottom: 24px;
+          transition: transform 0.3s ease;
+        }
+        
+        .footer-logo:hover {
+          transform: scale(1.02);
+        }
 
-            <div className="col-md-2 col-sm-6">
-              <div className="footer-menu">
-                <h5 className="widget-title" style={{ color: '#007bff', marginBottom: '1.5rem', fontSize: '1.1rem' }}>Dịch Vụ Khách Hàng</h5>
-                <ul className="menu-list list-unstyled">
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Câu hỏi thường gặp</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Liên hệ</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Chính sách bảo mật</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Đổi trả & hoàn tiền</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Hướng dẫn sử dụng Cookie</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Thông tin giao hàng</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+        .footer-text {
+          color: #64748b;
+          font-size: 0.95rem;
+          line-height: 1.8;
+          margin-bottom: 32px;
+        }
 
-            <div className="col-md-2 col-sm-6">
-              <div className="footer-menu">
-                <h5 className="widget-title" style={{ color: '#007bff', marginBottom: '1.5rem', fontSize: '1.1rem' }}>Liên Kết Nhanh</h5>
-                <ul className="menu-list list-unstyled">
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Tài khoản của tôi</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Theo dõi đơn hàng</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Thanh toán</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Danh sách yêu thích</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Tìm cửa hàng</a>
-                  </li>
-                  <li className="menu-item" style={{ marginBottom: '0.5rem' }}>
-                    <a href="#" className="nav-link" style={linkStyle}>Thẻ quà tặng</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+        .footer-title {
+          color: #0f172a;
+          font-size: 1.15rem;
+          font-weight: 700;
+          margin-bottom: 24px;
+          position: relative;
+          padding-bottom: 12px;
+        }
 
-            <div className="col-lg-3 col-md-6 col-sm-6">
-              <div className="footer-menu">
-                <h5 className="widget-title" style={{ color: '#007bff', marginBottom: '1.5rem', fontSize: '1.1rem' }}>Liên Hệ Chúng Tôi</h5>
-                <p style={{ marginBottom: '1.5rem', lineHeight: '1.6' }}>
-                  Liên hệ với chúng tôi để nhận cập nhật hoặc chi tiết về các chương trình ưu đãi đặc biệt.
-                </p>
-                <form className="d-flex mt-3 gap-0" role="form" onSubmit={handleSubmit}>
-                  <input
-                    className="form-control rounded-start rounded-0 bg-light"
-                    type="email"
-                    placeholder="Nhập địa chỉ email"
-                    aria-label="Địa chỉ email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    style={{ border: 'none', padding: '0.75rem' }}
-                  />
-                  <button className="btn btn-primary rounded-end rounded-0" type="submit" style={{ backgroundColor: '#007bff', borderColor: '#007bff', padding: '0.75rem 1.5rem' }}>
-                    Liên hệ
-                  </button>
-                </form>
-              </div>
+        .footer-title::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 40px;
+          height: 3px;
+          background: #3b82f6;
+          border-radius: 2px;
+        }
+
+        .footer-link-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        .footer-link-item {
+          margin-bottom: 14px;
+        }
+
+        .footer-link {
+          color: #475569;
+          text-decoration: none;
+          font-size: 0.95rem;
+          transition: all 0.2s ease;
+          display: inline-block;
+          font-weight: 500;
+        }
+
+        .footer-link:hover {
+          color: #3b82f6;
+          transform: translateX(4px);
+        }
+
+        .social-icons-wrapper {
+          display: flex;
+          gap: 12px;
+        }
+
+        .social-icon-btn {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: #f1f5f9;
+          color: #475569;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          border: 1px solid transparent;
+        }
+
+        .social-icon-btn:hover {
+          background: #ffffff;
+          color: #3b82f6;
+          border-color: #3b82f6;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+          transform: translateY(-3px);
+        }
+
+        .newsletter-form {
+          position: relative;
+          display: flex;
+          width: 100%;
+          margin-top: 16px;
+        }
+
+        .newsletter-input {
+          width: 100%;
+          padding: 14px 20px;
+          padding-right: 120px;
+          border: 1px solid #cbd5e1;
+          border-radius: 30px;
+          background: #f8fafc;
+          color: #334155;
+          font-size: 0.95rem;
+          outline: none;
+          transition: all 0.3s ease;
+        }
+
+        .newsletter-input:focus {
+          background: #ffffff;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .newsletter-btn {
+          position: absolute;
+          right: 4px;
+          top: 4px;
+          bottom: 4px;
+          background: linear-gradient(135deg, #3b82f6, #2563eb);
+          color: white;
+          border: none;
+          border-radius: 26px;
+          padding: 0 24px;
+          font-weight: 600;
+          font-size: 0.95rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+        }
+
+        .newsletter-btn:hover {
+          background: linear-gradient(135deg, #2563eb, #1d4ed8);
+          transform: scale(1.02);
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .footer-bottom {
+          margin-top: 60px;
+          padding-top: 24px;
+          border-top: 1px solid #f1f5f9;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+
+        .footer-copyright {
+          color: #94a3b8;
+          font-size: 0.9rem;
+          margin: 0;
+        }
+
+        .footer-hotline {
+          background: #eff6ff;
+          color: #2563eb;
+          padding: 10px 24px;
+          border-radius: 30px;
+          font-weight: 700;
+          font-size: 0.95rem;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          box-shadow: 0 2px 6px rgba(37, 99, 235, 0.05);
+        }
+
+        @media (max-width: 991px) {
+          .footer-padding {
+            padding-bottom: 40px;
+          }
+        }
+      `}</style>
+      
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-3 col-md-6 mb-5 footer-padding">
+            <img src="/images/Logo.png" alt="Vinsaky Logo" className="footer-logo" />
+            <p className="footer-text">
+              Chúng tôi cung cấp các sản phẩm chất lượng cao với dịch vụ khách hàng tốt nhất. Sự hài lòng của bạn là mục tiêu của chúng tôi.
+            </p>
+            <h6 className="mb-3" style={{ color: '#0f172a', fontWeight: '700' }}>Theo dõi chúng tôi</h6>
+            <div className="social-icons-wrapper">
+              <a href="#" className="social-icon-btn" aria-label="Facebook">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              </a>
+              <a href="#" className="social-icon-btn" aria-label="Twitter">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+              </a>
+              <a href="#" className="social-icon-btn" aria-label="Instagram">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+              </a>
+              <a href="#" className="social-icon-btn" aria-label="Amazon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.36 17.3c-.64.53-2.14 1.7-4.8 2.3-2.66.6-4.68.6-6.19.4-1.5-.2-2.58-.65-3.08-.85-.5-.2-.72-.37-.8-.49-.08-.12-.04-.26.09-.32.13-.06.4-.04.6.01.2.05.57.17 1.48.42 1.35.37 2.76.5 4.14.37 1.38-.13 3.12-.49 4.88-1.28 1.76-.79 3.03-1.6 3.43-1.85.4-.25.56-.25.66-.18.1.07.13.25-.01.68z"/><path d="M21.36 16.5c.08-.13.2-.23.36-.28.16-.05.34-.04.5.03.1.04.16.1.19.16.03.06.03.14-.01.24-.04.1-.12.23-.23.37-.15.2-.42.48-.75.76-.33.28-.73.55-1.13.78v-1.17c.23-.22.61-.53 1.07-.89z"/></svg>
+              </a>
             </div>
           </div>
-        </div>
-      </footer>
 
-    </>
+          <div className="col-lg-2 col-md-4 mb-5 footer-padding">
+            <h5 className="footer-title">Về Chúng Tôi</h5>
+            <ul className="footer-link-list">
+              <li className="footer-link-item"><a href="#" className="footer-link">Giới thiệu</a></li>
+              <li className="footer-link-item"><a href="#" className="footer-link">Điều khoản</a></li>
+              <li className="footer-link-item"><a href="#" className="footer-link">Tạp chí nội bộ</a></li>
+              <li className="footer-link-item"><a href="#" className="footer-link">Cơ hội nghề</a></li>
+              <li className="footer-link-item"><a href="#" className="footer-link">Báo chí Vinsaky</a></li>
+            </ul>
+          </div>
+
+          <div className="col-lg-2 col-md-4 mb-5 footer-padding">
+            <h5 className="footer-title">Khách Hàng</h5>
+            <ul className="footer-link-list">
+              <li className="footer-link-item"><a href="#" className="footer-link">Câu hỏi & FAQ</a></li>
+              <li className="footer-link-item"><a href="#" className="footer-link">Bảo mật</a></li>
+              <li className="footer-link-item"><a href="#" className="footer-link">Đổi trả & hoàn tiền</a></li>
+              <li className="footer-link-item"><a href="#" className="footer-link">Hướng dẫn mua</a></li>
+            </ul>
+          </div>
+
+          <div className="col-lg-2 col-md-4 mb-5 footer-padding">
+            <h5 className="footer-title">Liên Kết Nhanh</h5>
+            <ul className="footer-link-list">
+              <li className="footer-link-item"><a href="#" className="footer-link">Tài khoản của tôi</a></li>
+              <li className="footer-link-item"><a href="#" className="footer-link">Theo dõi đơn hàng</a></li>
+              <li className="footer-link-item"><a href="#" className="footer-link">Thanh toán</a></li>
+              <li className="footer-link-item"><a href="#" className="footer-link">Tìm cửa hàng</a></li>
+            </ul>
+          </div>
+
+          <div className="col-lg-3 col-md-6 mb-5 footer-padding">
+            <h5 className="footer-title">Nhận Ưu Đãi</h5>
+            <p className="footer-text" style={{ marginBottom: '16px' }}>
+              Đăng ký email để nhận thông báo về sản phẩm mới và khuyến mãi.
+            </p>
+            <form className="newsletter-form" onSubmit={handleSubmit}>
+              <input
+                type="email"
+                className="newsletter-input"
+                placeholder="Nhập email..."
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <button type="submit" className="newsletter-btn">
+                Gửi
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <p className="footer-copyright">
+            © {new Date().getFullYear()} Vinsaky. All rights reserved. Designed with precision.
+          </p>
+          <div className="footer-hotline">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            Hotline Hỗ Trợ: 0903 242 748
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 };
 

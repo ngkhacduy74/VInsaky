@@ -687,546 +687,601 @@ const CreateProduct = () => {
   }
 
   return (
-    <Container
-      fluid
-      className="bg-light admin-page"
-      style={{ minHeight: "100vh" }}
-    >
+    <Container fluid className="admin-page" style={{ minHeight: "100vh", backgroundColor: "#f8fafc", padding: 0 }}>
       <HeaderAdmin />
-      <Row>
-        <Col
-          md="auto"
-          style={{
-            width: "250px",
-            background: "#2c3e50",
-            color: "white",
-            padding: 0,
-          }}
-        >
+      <Row className="g-0">
+        <Col md="auto" style={{ width: "250px", background: "#1e293b", color: "white", minHeight: "100vh" }}>
           <Sidebar />
         </Col>
-        <Col style={{ marginLeft: "10px" }} className="p-4">
-          <div className="d-flex align-items-center mb-4">
-            <Button
-              variant="outline-secondary"
-              onClick={() => navigate("/manaProduct")}
-              className="me-3"
-            >
-              <ArrowLeft size={20} />
-            </Button>
-            <h3 className="mb-0">Tạo sản phẩm mới</h3>
-          </div>
+        <Col className="p-4" style={{ paddingBottom: "100px !important", position: "relative", overflow: "hidden" }}>
+          {/* Decorative Background Elements */}
+          <div style={{ position: "absolute", top: "-10%", left: "-10%", width: "50%", height: "50%", background: "radial-gradient(circle, rgba(59,130,246,0.12) 0%, rgba(255,255,255,0) 70%)", borderRadius: "50%", zIndex: 0, pointerEvents: "none" }}></div>
+          <div style={{ position: "absolute", top: "20%", right: "-10%", width: "40%", height: "60%", background: "radial-gradient(circle, rgba(147,51,234,0.08) 0%, rgba(255,255,255,0) 70%)", borderRadius: "50%", zIndex: 0, pointerEvents: "none" }}></div>
+          <div style={{ position: "absolute", bottom: "10%", left: "10%", width: "30%", height: "40%", background: "radial-gradient(circle, rgba(16,185,129,0.08) 0%, rgba(255,255,255,0) 70%)", borderRadius: "50%", zIndex: 0, pointerEvents: "none" }}></div>
 
-          {error && <Alert variant="danger">{error}</Alert>}
-          {success && <Alert variant="success">{success}</Alert>}
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <style>{`
+              .admin-create-product-header {
+                margin-bottom: 32px;
+                display: flex;
+                align-items: center;
+                background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+                padding: 24px 32px;
+                border-radius: 20px;
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.8);
+              }
+              .admin-create-product-header h3 {
+                font-weight: 800;
+                color: #1e293b;
+                letter-spacing: -0.5px;
+                margin: 0;
+                background: linear-gradient(90deg, #1e293b, #3b82f6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+              }
+              .admin-create-product-section {
+                background: #ffffff;
+                border-radius: 20px;
+                padding: 32px;
+                margin-bottom: 24px;
+                border: 1px solid rgba(226, 232, 240, 0.8);
+                box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+              }
+              .admin-create-product-section::before {
+                 content: '';
+                 position: absolute;
+                 top: 0; left: 0; width: 4px; height: 100%;
+                 background: transparent;
+                 transition: all 0.3s ease;
+              }
+              .admin-create-product-section:hover::before {
+                 background: #3b82f6;
+              }
+              .admin-create-product-section:hover {
+                box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.08);
+                transform: translateY(-2px);
+              }
+              .section-title {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #0f172a;
+                margin-bottom: 28px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding-bottom: 16px;
+                border-bottom: 2px dashed #f1f5f9;
+              }
+              .admin-create-product-label {
+                color: #475569;
+                font-weight: 600;
+                font-size: 0.95rem;
+                margin-bottom: 8px;
+              }
+              .form-control {
+                border-radius: 12px;
+                border: 1px solid #cbd5e1;
+                padding: 14px 18px;
+                transition: all 0.2s;
+                background-color: #f8fafc;
+              }
+              .form-control:focus {
+                background-color: #ffffff;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+              }
+              .image-upload-container {
+                border: 2px dashed #94a3b8;
+                border-radius: 16px;
+                padding: 48px 24px;
+                text-align: center;
+                background: #f8fafc;
+                transition: all 0.3s;
+                cursor: pointer;
+                margin-bottom: 20px;
+              }
+              .image-upload-container:hover {
+                border-color: #3b82f6;
+                background: #eff6ff;
+                transform: scale(1.02);
+              }
+              .image-preview-card {
+                position: relative;
+                border-radius: 14px;
+                overflow: hidden;
+                border: 1px solid #e2e8f0;
+                aspect-ratio: 1;
+                background: #f1f5f9;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                transition: transform 0.2s;
+              }
+              .image-preview-card:hover {
+                 transform: translateY(-4px);
+                 box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+              }
+              .image-preview-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+              }
+              .image-remove-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: rgba(239, 68, 68, 0.95);
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.2s;
+                z-index: 10;
+                box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+              }
+              .image-remove-btn:hover {
+                background: rgb(220, 38, 38);
+                transform: scale(1.15) rotate(90deg);
+              }
+              .sticky-action-bar {
+                position: fixed;
+                bottom: 0;
+                left: 250px; /* Offset for sidebar */
+                right: 0;
+                background: rgba(255, 255, 255, 0.85);
+                backdrop-filter: blur(12px);
+                padding: 20px 32px;
+                box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+                z-index: 1000;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 20px;
+                border-top: 1px solid rgba(226, 232, 240, 0.8);
+              }
+              .btn-save-sticky {
+                background: linear-gradient(135deg, #2563eb, #4f46e5);
+                border: none;
+                border-radius: 12px;
+                padding: 14px 40px;
+                font-weight: 700;
+                font-size: 1.15rem;
+                color: white;
+                box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
+                transition: all 0.3s;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+              }
+              .btn-save-sticky:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.5);
+              }
+              .description-editable {
+                min-height: 220px;
+                border: 1px solid #cbd5e1;
+                border-radius: 14px;
+                padding: 20px;
+                font-family: inherit;
+                background: #f8fafc;
+                outline: none;
+                word-break: break-word;
+                transition: all 0.2s;
+                line-height: 1.6;
+              }
+              .description-editable:focus {
+                background: #fff;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+              }
+              @media (max-width: 768px) {
+                 .sticky-action-bar { left: 0; }
+              }
+            `}</style>
 
-          <Form onSubmit={handleSubmit}>
-            <Row>
-              <Col md={8}>
-                <Card className="mb-4">
-                  <Card.Header>
-                    <h5 className="mb-0">Thông tin cơ bản</h5>
-                  </Card.Header>
-                  <Card.Body>
-                    <Row>
-                      <Col md={6}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Tên sản phẩm *</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.name}
-                            placeholder="Nhập tên sản phẩm"
-                            maxLength={100}
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.name}
-                          </Form.Control.Feedback>
-                          <Form.Text className="text-muted">
-                            {formData.name.length}/100 ký tự
-                          </Form.Text>
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Thương hiệu *</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="brand"
-                            value={formData.brand}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.brand}
-                            placeholder="Nhập thương hiệu"
-                            maxLength={50}
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.brand}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col md={3}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Giá (VND) *</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="price"
-                            value={formData.price}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.price}
-                            placeholder="1000"
-                          />
-                          <Form.Text className="text-muted">
-                            Tối thiểu 1.000 VND
-                          </Form.Text>
-                          <Form.Control.Feedback type="invalid">
-                            {errors.price}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col md={3}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Liên Hệ *</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="business_phone"
-                            value={formData.business_phone}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.business_phone}
-                            placeholder="Nhập số điện thoại doanh nghiệp"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.business_phone}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col md={3}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Số lượng *</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="quantity"
-                            value={formData.quantity}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.quantity}
-                            placeholder="1"
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {errors.quantity}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col md={3}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Tình trạng</Form.Label>
-                          <Form.Select
-                            name="status"
-                            value={formData.status}
-                            onChange={handleInputChange}
-                          >
-                            <option value="New">Mới</option>
-                            <option value="SecondHand">Đã qua sử dụng</option>
-                          </Form.Select>
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Mô tả *</Form.Label>
-                      <div
-                        ref={descriptionDivRef}
-                        contentEditable
-                        suppressContentEditableWarning
-                        className="description-editable"
-                        style={{
-                          minHeight: 180,
-                          border: "1px solid #ccc",
-                          borderRadius: 4,
-                          padding: 10,
-                          fontFamily: "Times New Roman",
-                          background: "#fff",
-                          outline: "none",
-                          whiteSpace: "pre-wrap",
-                          wordBreak: "break-word",
-                        }}
-                        placeholder="Nhập mô tả sản phẩm (có thể dán ảnh, chỉ nhận text thường, font Times New Roman)"
-                        onPaste={handleDescriptionPaste}
-                        onInput={handleDescriptionInput}
-                        spellCheck={true}
-                      />
-                      <div
-                        style={{ fontSize: 13, color: "#888", marginTop: 4 }}
-                      >
-                        {formData.description.length}/2000 ký tự
-                      </div>
-                      {errors.description && (
-                        <div className="error-message">
-                          {errors.description}
-                        </div>
-                      )}
-                    </Form.Group>
-                  </Card.Body>
-                </Card>
+            <div className="admin-create-product-header">
+              <Button
+                variant="light"
+                onClick={() => navigate("/manaProduct")}
+                style={{ borderRadius: "14px", width: "52px", height: "52px", display: "flex", alignItems: "center", justifyContent: "center", background: "#ffffff" }}
+                className="me-4 shadow-sm border-0"
+              >
+                <ArrowLeft size={24} color="#334155" />
+              </Button>
+              <h3>Tạo Sản Phẩm Mới (Admin)</h3>
+            </div>
 
-                <Card className="mb-4">
-                  <Card.Header>
-                    <h5 className="mb-0">Thông số kỹ thuật</h5>
-                  </Card.Header>
-                  <Card.Body>
-                    <Row>
-                      <Col md={6}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Kích thước (cm) *</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="size"
-                            value={formData.size}
-                            onChange={handleInputChange}
-                            isInvalid={!!errors.size}
-                            placeholder="VD: 60 x 55 x 85"
-                          />
-                          <Form.Text className="text-muted">
-                            Sử dụng dấu "x" giữa các số (VD: 60 x 55 x 85)
-                          </Form.Text>
-                          <Form.Control.Feedback type="invalid">
-                            {errors.size}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Trọng lượng *</Form.Label>
-                          <div className="d-flex align-items-center">
-                            <Form.Control
-                              type="text"
-                              name="weight"
-                              value={formData.weight}
-                              onChange={handleInputChange}
-                              isInvalid={!!errors.weight}
-                              placeholder="VD: 65"
-                            />
-                            <span className="ms-2">kg</span>
-                          </div>
-                          <Form.Control.Feedback type="invalid">
-                            {errors.weight}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col md={6}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Điện áp *</Form.Label>
-                          <div className="d-flex align-items-center">
-                            <Form.Control
-                              type="text"
-                              name="voltage"
-                              value={formData.voltage}
-                              onChange={handleInputChange}
-                              isInvalid={!!errors.voltage}
-                              placeholder="VD: 220 hoặc 220V"
-                            />
-                            <span className="ms-2">volt</span>
-                          </div>
-                          <Form.Control.Feedback type="invalid">
-                            {errors.voltage}
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col md={6}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Thời gian bảo hành (tháng)</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="warranty_period"
-                            value={formData.warranty_period}
-                            onChange={handleInputChange}
-                            placeholder="12"
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                  </Card.Body>
-                </Card>
+          {error && <Alert variant="danger" className="border-0 shadow-sm" style={{ borderRadius: "12px" }}>{error}</Alert>}
+          {success && <Alert variant="success" className="border-0 shadow-sm" style={{ borderRadius: "12px" }}>{success}</Alert>}
 
-                <Card className="mb-4">
-                  <Card.Header className="d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">Tính năng</h5>
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      onClick={addFeature}
+          <Form onSubmit={handleSubmit} style={{ paddingBottom: "100px" }}>
+            {/* Section 1: Thông tin cơ bản */}
+            <div className="admin-create-product-section">
+              <div className="section-title">
+                <span style={{ background: "#eff6ff", padding: "8px", borderRadius: "8px", color: "#2563eb", display: "flex" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+                </span>
+                Thông tin cơ bản
+              </div>
+              
+              <Row>
+                <Col md={12}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="admin-create-product-label">Tên sản phẩm *</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      isInvalid={!!errors.name}
+                      placeholder="VD: Máy làm đá công nghiệp SK-400P"
+                      maxLength={100}
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={4}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="admin-create-product-label">Thương hiệu *</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="brand"
+                      value={formData.brand}
+                      onChange={handleInputChange}
+                      isInvalid={!!errors.brand}
+                      placeholder="VD: Sanaky, Berjaya..."
+                      maxLength={50}
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.brand}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={4}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="admin-create-product-label">Giá (VND) *</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="price"
+                      value={formData.price}
+                      onChange={handleInputChange}
+                      isInvalid={!!errors.price}
+                      placeholder="VD: 15000000"
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.price}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={4}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="admin-create-product-label">Tình trạng</Form.Label>
+                    <Form.Select
+                      name="status"
+                      value={formData.status}
+                      onChange={handleInputChange}
+                      className="form-control"
+                      style={{ cursor: "pointer" }}
                     >
-                      Thêm tính năng
-                    </Button>
-                  </Card.Header>
-                  <Card.Body>
-                    {formData.features.map((feature, index) => (
-                      <Row key={index} className="mb-2">
-                        <Col md={4}>
-                          <Form.Control
-                            type="text"
-                            value={feature.title}
-                            onChange={(e) =>
-                              handleFeatureChange(
-                                index,
-                                "title",
-                                e.target.value
-                              )
-                            }
-                            placeholder={`Tiêu đề tính năng ${index + 1}`}
-                            isInvalid={!!errors.features}
-                            minLength={2}
-                            maxLength={25}
-                          />
-                        </Col>
-                        <Col md={6}>
-                          <Form.Control
-                            type="text"
-                            value={feature.description}
-                            onChange={(e) =>
-                              handleFeatureChange(
-                                index,
-                                "description",
-                                e.target.value
-                              )
-                            }
-                            placeholder={`Mô tả tính năng ${index + 1}`}
-                            isInvalid={!!errors.features}
-                            minLength={2}
-                            maxLength={25}
-                          />
-                        </Col>
-                        <Col md={2}>
-                          {formData.features.length > 1 && (
-                            <Button
-                              variant="outline-danger"
-                              size="sm"
-                              onClick={() => removeFeature(index)}
+                      <option value="New">Hàng Mới</option>
+                      <option value="SecondHand">Chưa qua sử dụng</option>
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+                <Col md={12}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="admin-create-product-label">Số điện thoại doanh nghiệp liên hệ *</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="business_phone"
+                      value={formData.business_phone}
+                      onChange={handleInputChange}
+                      isInvalid={!!errors.business_phone}
+                      placeholder="Nhập số điện thoại liên hệ mua hàng"
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.business_phone}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+              </Row>
+            </div>
+
+            {/* Section 2: Chi tiết kỹ thuật */}
+            <div className="admin-create-product-section">
+              <div className="section-title">
+                <span style={{ background: "#f0fdf4", padding: "8px", borderRadius: "8px", color: "#16a34a", display: "flex" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </span>
+                Chi tiết kỹ thuật
+              </div>
+              
+              <Row>
+                <Col md={4}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="admin-create-product-label">Kích thước (cm)</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="size"
+                      value={formData.size}
+                      onChange={handleInputChange}
+                      isInvalid={!!errors.size}
+                      placeholder="VD: 60 x 55 x 85"
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.size}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={4}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="admin-create-product-label">Trọng lượng (kg)</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="weight"
+                      value={formData.weight}
+                      onChange={handleInputChange}
+                      isInvalid={!!errors.weight}
+                      placeholder="VD: 65"
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.weight}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={4}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="admin-create-product-label">Điện áp (V)</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="voltage"
+                      value={formData.voltage}
+                      onChange={handleInputChange}
+                      isInvalid={!!errors.voltage}
+                      placeholder="VD: 220V"
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.voltage}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="admin-create-product-label">Thời gian bảo hành (tháng)</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="warranty_period"
+                      value={formData.warranty_period}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="admin-create-product-label">Kho hàng (Số lượng) *</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="quantity"
+                      value={formData.quantity}
+                      onChange={handleInputChange}
+                      isInvalid={!!errors.quantity}
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.quantity}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+              </Row>
+            </div>
+
+            {/* Section 3: Tính năng nổi bật */}
+            <div className="admin-create-product-section">
+              <div className="section-title">
+                <span style={{ background: "#fef3c7", padding: "8px", borderRadius: "8px", color: "#d97706", display: "flex" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </span>
+                Tính năng nổi bật
+              </div>
+              
+              {formData.features.map((feature, index) => (
+                <Row key={index} className="mb-3 align-items-start">
+                  <Col md={4}>
+                    <Form.Control
+                      type="text"
+                      value={feature.title}
+                      onChange={(e) => handleFeatureChange(index, "title", e.target.value)}
+                      placeholder={`Tiêu đề (VD: Công nghệ làm lạnh)`}
+                      isInvalid={!!errors.features}
+                    />
+                  </Col>
+                  <Col md={7}>
+                    <Form.Control
+                      type="text"
+                      value={feature.description}
+                      onChange={(e) => handleFeatureChange(index, "description", e.target.value)}
+                      placeholder={`Mô tả chi tiết năng`}
+                      isInvalid={!!errors.features}
+                    />
+                  </Col>
+                  <Col md={1} className="text-end">
+                    {formData.features.length > 1 && (
+                      <Button variant="outline-danger" className="border-0 bg-light" onClick={() => removeFeature(index)}>
+                        <X size={18} className="text-danger" />
+                      </Button>
+                    )}
+                  </Col>
+                </Row>
+              ))}
+              <Button variant="outline-primary" onClick={addFeature} className="mt-2" style={{ borderRadius: "8px", fontWeight: "600" }}>
+                <Plus size={18} className="me-1" /> Thêm tính năng
+              </Button>
+              {errors.features && <Form.Text className="text-danger d-block mt-2">{errors.features}</Form.Text>}
+            </div>
+
+            {/* Section 4: Hình ảnh và Video */}
+            <div className="admin-create-product-section">
+              <div className="section-title">
+                <span style={{ background: "#f3e8ff", padding: "8px", borderRadius: "8px", color: "#9333ea", display: "flex" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </span>
+                Hình ảnh & Video
+              </div>
+              
+              <Form.Group className="mb-4">
+                <Form.Label className="admin-create-product-label">Hình ảnh sản phẩm (Tối đa 5 ảnh) *</Form.Label>
+                
+                <div 
+                  className="image-upload-container" 
+                  onClick={() => document.getElementById('file-upload').click()}
+                >
+                  <div style={{ background: "white", width: "64px", height: "64px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto", marginBottom: "16px", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }}>
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                  </div>
+                  <h6 style={{ color: "#1e293b", fontWeight: 700, fontSize: "1.1rem" }}>Click để tải ảnh lên</h6>
+                  <p className="text-muted small mb-0 mt-2">Hỗ trợ JPG, PNG, GIF, WebP (Tối đa 5MB)</p>
+                  <Form.Control
+                    id="file-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUploadImageFile}
+                    disabled={imageUrls.filter(u => u.trim() !== "").length >= 5}
+                    style={{ display: "none" }}
+                  />
+                </div>
+
+                {/* Lưới hiển thị ảnh đã upload */}
+                {imageUrls.filter(url => url.trim() !== "").length > 0 && (
+                  <div className="row g-3 mt-4">
+                    <div className="col-12 mb-2"><span className="fw-semibold" style={{color: "#64748b"}}>Ảnh đã chọn:</span></div>
+                    {imageUrls.map((url, index) => {
+                      if (url.trim() === "") return null;
+                      return (
+                        <div key={index} className="col-sm-4 col-md-3 col-lg-2">
+                          <div className="image-preview-card">
+                            <button 
+                              type="button" 
+                              className="image-remove-btn"
+                              onClick={(e) => { e.stopPropagation(); removeImageUrl(index); }}
                             >
-                              <X size={16} />
-                            </Button>
-                          )}
-                        </Col>
-                      </Row>
-                    ))}
-                    {errors.features && (
-                      <Form.Text className="text-danger">
-                        {errors.features}
-                      </Form.Text>
+                              <X size={14} strokeWidth={3} />
+                            </button>
+                            <img 
+                              src={url} 
+                              alt={`Preview ${index + 1}`} 
+                              onError={(e) => { e.target.style.display = "none"; }} 
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {imageUrls.filter(u => u.trim() !== "").length < 5 && (
+                       <div className="col-sm-4 col-md-3 col-lg-2">
+                          <div 
+                            className="image-preview-card d-flex flex-column align-items-center justify-content-center"
+                            style={{ border: "2px dashed #cbd5e1", background: "#f8fafc", cursor: "pointer", transition: "all 0.2s" }}
+                            onClick={() => {
+                              const lastBlank = imageUrls.findIndex(u => u.trim() === "");
+                              if (lastBlank === -1) {
+                                  addImageUrl();
+                              }
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.borderColor = "#3b82f6"}
+                            onMouseOut={(e) => e.currentTarget.style.borderColor = "#cbd5e1"}
+                          >
+                            <Plus size={32} color="#94a3b8" />
+                            <div className="fw-semibold mt-2" style={{color: "#94a3b8", fontSize: "0.9rem"}}>Thêm URL</div>
+                          </div>
+                       </div>
                     )}
-                  </Card.Body>
-                </Card>
-              </Col>
+                  </div>
+                )}
 
-              <Col md={4}>
-                <Card className="mb-4">
-                  <Card.Header className="d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">
-                      <Link size={20} className="me-2" />
-                      URL Hình ảnh sản phẩm
-                    </h5>
-                    {imageUrls.length < 5 && (
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={addImageUrl}
-                      >
-                        <Plus size={16} />
-                      </Button>
-                    )}
-                  </Card.Header>
-                  <Card.Body>
-                    {/* Thêm input file upload ảnh */}
-                    <div className="mb-3">
-                      <Form.Group>
-                        <Form.Label>Hoặc chọn file ảnh để upload</Form.Label>
+                {/* URL Inputs fallback for direct links */}
+                <div className="mt-4 pt-4 border-top">
+                   <p className="text-muted mb-3 small fw-semibold">Hoặc nhập link hình ảnh trực tiếp:</p>
+                   {imageUrls.map((url, index) => (
+                      <div key={index} className="mb-2 d-flex align-items-center">
                         <Form.Control
-                          type="file"
-                          accept="image/*"
-                          onChange={handleUploadImageFile}
-                          disabled={imageUrls.length >= 5}
+                          type="url"
+                          value={url}
+                          onChange={(e) => handleImageUrlChange(index, e.target.value)}
+                          placeholder="https://..."
+                          style={{ fontSize: "0.9rem" }}
+                          isInvalid={!!errors.images && url.trim() !== "" && !isImageUrl(url)}
                         />
-                        <Form.Text className="text-muted">
-                          Tối đa 5 ảnh. Ảnh upload sẽ tự động thêm vào danh sách
-                          URL.
-                        </Form.Text>
-                      </Form.Group>
-                    </div>
-                    {imageUrls.map((url, index) => (
-                      <div key={index} className="mb-3">
-                        <Form.Group>
-                          <Form.Label>
-                            URL Hình ảnh {index + 1} {index === 0 && "*"}
-                          </Form.Label>
-                          <div className="d-flex">
-                            <Form.Control
-                              type="url"
-                              value={url}
-                              onChange={(e) =>
-                                handleImageUrlChange(index, e.target.value)
-                              }
-                              placeholder="https://example.com/image.jpg"
-                              isInvalid={
-                                !!errors.images &&
-                                url.trim() !== "" &&
-                                !isImageUrl(url)
-                              }
-                            />
-                            {imageUrls.length > 1 && (
-                              <Button
-                                variant="outline-danger"
-                                size="sm"
-                                className="ms-2"
-                                onClick={() => removeImageUrl(index)}
-                              >
-                                <X size={16} />
-                              </Button>
-                            )}
-                          </div>
-                          {url.trim() !== "" && !isImageUrl(url) && (
-                            <Form.Text className="text-danger">
-                              URL hình ảnh không hợp lệ
-                            </Form.Text>
-                          )}
-                        </Form.Group>
-
-                        {/* Preview image */}
-                        {url.trim() !== "" && isImageUrl(url) && (
-                          <div className="mt-2">
-                            <img
-                              src={url}
-                              alt={`Preview ${index + 1}`}
-                              className="img-fluid"
-                              style={{
-                                maxHeight: "150px",
-                                borderRadius: "8px",
-                                border: "1px solid #dee2e6",
-                              }}
-                              onError={(e) => {
-                                e.target.style.display = "none";
-                              }}
-                            />
-                          </div>
+                        {imageUrls.length > 1 && (
+                           <Button variant="light" className="ms-2 text-danger border-0 d-flex align-items-center justify-content-center" style={{width: '44px', height: '44px', borderRadius: '10px'}} onClick={() => removeImageUrl(index)}><X size={20}/></Button>
                         )}
                       </div>
-                    ))}
+                   ))}
+                   {errors.images && <Form.Text className="text-danger fw-semibold">{errors.images}</Form.Text>}
+                </div>
+              </Form.Group>
 
-                    <Form.Text className="text-muted">
-                      Tối đa 5 URL hình ảnh. Hỗ trợ: JPG, PNG, GIF, WebP
-                    </Form.Text>
-                    {errors.images && (
-                      <Form.Text className="text-danger d-block">
-                        {errors.images}
-                      </Form.Text>
-                    )}
-                  </Card.Body>
-                </Card>
+              <Form.Group className="mb-0 mt-4 pt-4 border-top">
+                <Form.Label className="admin-create-product-label">URL Video sản phẩm (Tùy chọn)</Form.Label>
+                <Form.Control
+                  type="url"
+                  value={videoUrl}
+                  onChange={(e) => handleVideoUrlChange(e.target.value)}
+                  placeholder="https://youtube.com/..."
+                  isInvalid={!!errors.video}
+                />
+                <Form.Control.Feedback type="invalid">{errors.video}</Form.Control.Feedback>
+                
+                {videoUrl.trim() !== "" && isVideoUrl(videoUrl) && (
+                  <div className="mt-3">
+                    <video
+                      src={videoUrl}
+                      controls
+                      style={{ height: "200px", borderRadius: "12px", background: "#000", width: "100%", objectFit: "contain", maxWidth: "600px" }}
+                    />
+                  </div>
+                )}
+              </Form.Group>
+            </div>
 
-                <Card className="mb-4">
-                  <Card.Header>
-                    <h5 className="mb-0">
-                      <Link size={20} className="me-2" />
-                      URL Video sản phẩm
-                    </h5>
-                  </Card.Header>
-                  <Card.Body>
-                    <Form.Group className="mb-3">
-                      <Form.Label>URL Video (tùy chọn)</Form.Label>
-                      <Form.Control
-                        type="url"
-                        value={videoUrl}
-                        onChange={(e) => handleVideoUrlChange(e.target.value)}
-                        placeholder="https://example.com/video.mp4"
-                        isInvalid={!!errors.video}
-                      />
-                      <Form.Text className="text-muted">
-                        Hỗ trợ: MP4, AVI, MOV, YouTube, Vimeo
-                      </Form.Text>
-                      <Form.Control.Feedback type="invalid">
-                        {errors.video}
-                      </Form.Control.Feedback>
-                    </Form.Group>
+            {/* Section 5: Mô tả chi tiết */}
+            <div className="admin-create-product-section mb-5">
+              <div className="section-title">
+                <span style={{ background: "#ffe4e6", padding: "8px", borderRadius: "8px", color: "#e11d48", display: "flex" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </span>
+                Mô tả chi tiết
+              </div>
+              <Form.Group>
+                <div
+                  ref={descriptionDivRef}
+                  contentEditable
+                  suppressContentEditableWarning
+                  className="description-editable"
+                  placeholder="Nhập mô tả chi tiết sản phẩm..."
+                  onPaste={handleDescriptionPaste}
+                  onInput={handleDescriptionInput}
+                  spellCheck={true}
+                />
+                <div className="d-flex justify-content-between mt-3 align-items-center">
+                   <Form.Text className="text-muted m-0">Ghi chú: Bạn có thể dán ảnh trực tiếp vào khung soạn thảo này.</Form.Text>
+                   <span className="badge rounded-pill" style={{ background: formData.description.length > 2000 ? "#fee2e2" : "#f1f5f9", color: formData.description.length > 2000 ? "#ef4444" : "#64748b", fontWeight: 600 }}>
+                     {formData.description.length}/2000
+                   </span>
+                </div>
+                {errors.description && <div className="text-danger small mt-2 fw-semibold">{errors.description}</div>}
+              </Form.Group>
+            </div>
 
-                    {/* Preview video */}
-                    {videoUrl.trim() !== "" && isVideoUrl(videoUrl) && (
-                      <div className="mt-3">
-                        {videoUrl.includes("youtube.com") ||
-                        videoUrl.includes("youtu.be") ? (
-                          <div className="ratio ratio-16x9">
-                            <iframe
-                              src={videoUrl
-                                .replace("watch?v=", "embed/")
-                                .replace("youtu.be/", "youtube.com/embed/")}
-                              title="Video preview"
-                              allowFullScreen
-                              style={{ borderRadius: "8px" }}
-                            ></iframe>
-                          </div>
-                        ) : (
-                          <video
-                            src={videoUrl}
-                            controls
-                            className="img-fluid"
-                            style={{
-                              maxHeight: "200px",
-                              borderRadius: "8px",
-                              border: "1px solid #dee2e6",
-                            }}
-                            onError={(e) => {
-                              e.target.style.display = "none";
-                            }}
-                          />
-                        )}
-                      </div>
-                    )}
-                  </Card.Body>
-                </Card>
+            {/* Sticky Save Action Bar */}
+            <div className="sticky-action-bar">
+              <Button variant="light" onClick={() => navigate("/manaProduct")} style={{ fontWeight: 600, color: "#475569", padding: "12px 28px", borderRadius: "10px", border: "1px solid #cbd5e1" }}>
+                Hủy và Quay Lại
+              </Button>
+              <Button type="button" variant="outline-primary" onClick={handlePreview} style={{ borderRadius: "10px", fontWeight: 600 }}>
+                <Eye size={20} className="me-2" /> Xem trước dữ liệu
+              </Button>
+              <Button type="submit" disabled={loading} className="btn-save-sticky">
+                {loading ? (
+                  <><Spinner size="sm" /> Đang xử lý...</>
+                ) : (
+                  <><Save size={20} /> Tạo sản phẩm</>
+                )}
+              </Button>
+            </div>
 
-                <Card>
-                  <Card.Body>
-                    <div className="d-grid gap-2">
-                      <Button
-                        variant="success"
-                        type="submit"
-                        disabled={loading}
-                        size="lg"
-                      >
-                        {loading ? (
-                          <>
-                            <Spinner size="sm" className="me-2" />
-                            Đang tạo...
-                          </>
-                        ) : (
-                          <>
-                            <Save size={20} className="me-2" />
-                            Tạo sản phẩm
-                          </>
-                        )}
-                      </Button>
-                      <Button
-                        variant="outline-info"
-                        onClick={handlePreview}
-                        disabled={loading}
-                      >
-                        <Eye size={20} className="me-2" />
-                        Xem trước
-                      </Button>
-                      <Button
-                        variant="outline-secondary"
-                        onClick={() => navigate("/manaProduct")}
-                        disabled={loading}
-                      >
-                        Hủy
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
           </Form>
+          </div>
         </Col>
       </Row>
     </Container>

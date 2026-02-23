@@ -270,92 +270,168 @@ function AdminDashboard() {
   if (isLoading) return <div className="d-flex justify-content-center p-5"><div className="spinner-border" role="status"><span className="visually-hidden">Đang tải...</span></div></div>;
 
   return (
-    <Container fluid className="bg-light admin-page" style={{ minHeight: "100vh" }}>
+    <Container fluid className="admin-page" style={{ minHeight: "100vh", backgroundColor: "#f8fafc", padding: 0 }}>
       <HeaderAdmin />
-      <Row>
-        <Col md="auto" style={{ width: "250px", background: "#2c3e50", color: "white", padding: 0 }}>
+      <Row className="g-0">
+        <Col md="auto" style={{ width: "250px", background: "#ffffff", padding: 0 }}>
           <Sidebar />
         </Col>
-        <Col style={{ marginLeft: "10px" }} className="p-4">
-
-
-
+        <Col className="p-4" style={{ height: "calc(100vh - 76px)", overflowY: "auto" }}>
+          
+          <style>{`
+            .admin-dashboard-title {
+              font-size: 1.25rem;
+              font-weight: 800;
+              color: #0f172a;
+              margin-bottom: 16px;
+              display: flex;
+              align-items: center;
+              gap: 12px;
+            }
+            .admin-stat-card {
+              background: #ffffff;
+              border-radius: 16px;
+              padding: 16px 20px;
+              border: 1px solid rgba(226, 232, 240, 0.8);
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+              transition: all 0.3s ease;
+              height: 100%;
+              position: relative;
+              overflow: hidden;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            }
+            .admin-stat-card:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+              border-color: #cbd5e1;
+            }
+            .stat-icon-wrapper {
+              width: 38px;
+              height: 38px;
+              border-radius: 10px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-bottom: 12px;
+              font-size: 1rem;
+            }
+            .stat-value {
+              font-size: 1.75rem;
+              font-weight: 800;
+              line-height: 1.2;
+              margin-bottom: 2px;
+            }
+            .stat-label {
+              font-size: 0.75rem;
+              font-weight: 600;
+              color: #64748b;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            
+            /* Gradient Text Colors */
+            .text-gradient-primary { background: linear-gradient(135deg, #2563eb, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .bg-soft-primary { background: #eff6ff; color: #2563eb; }
+            
+            .text-gradient-success { background: linear-gradient(135deg, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .bg-soft-success { background: #ecfdf5; color: #10b981; }
+            
+            .text-gradient-warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .bg-soft-warning { background: #fffbeb; color: #f59e0b; }
+            
+            .text-gradient-info { background: linear-gradient(135deg, #06b6d4, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .bg-soft-info { background: #ecfeff; color: #06b6d4; }
+            
+            .text-gradient-purple { background: linear-gradient(135deg, #8b5cf6, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .bg-soft-purple { background: #f5f3ff; color: #8b5cf6; }
+          `}</style>
 
           {/* Data Source Status */}
-          <div className="mb-3">
-            <Alert variant={realData.summary ? "success" : "warning"}>
-              {realData.summary ? (
-                <>
-                  📊 <strong>Dữ Liệu Thực Đã Kết Nối:</strong> Dashboard đang sử dụng dữ liệu trực tiếp từ cơ sở dữ liệu của bạn
-                </>
-              ) : (
-                <>
-                  ⚠️ <strong>Không Có Dữ Liệu:</strong> Không thể lấy dữ liệu từ cơ sở dữ liệu
-                  <br />
-                  <small>
-                    Vui lòng kiểm tra:
-                    <ul className="mb-0 mt-1">
+          <div className="mb-4">
+            <Alert variant={realData.summary ? "success" : "warning"} style={{ borderRadius: "12px", border: "none", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }} className="d-flex align-items-start">
+              <div className="me-3 fs-4">{realData.summary ? "📊" : "⚠️"}</div>
+              <div>
+                {realData.summary ? (
+                  <>
+                    <strong className="d-block mb-1">Dữ Liệu Thực Đã Kết Nối</strong>
+                    <span className="text-muted">Dashboard đang sử dụng dữ liệu trực tiếp từ cơ sở dữ liệu của bạn.</span>
+                  </>
+                ) : (
+                  <>
+                    <strong className="d-block mb-1">Không Có Dữ Liệu</strong>
+                    <span className="text-muted mb-2 d-block">Không thể lấy dữ liệu từ cơ sở dữ liệu. Vui lòng kiểm tra:</span>
+                    <ul className="mb-0 text-muted small ps-3">
                       <li>Server backend đang chạy (port 4000)</li>
                       <li>MongoDB đã kết nối</li>
                       <li>Bạn đã đăng nhập với quyền Admin</li>
                       <li>Cơ sở dữ liệu có dữ liệu (users, posts, products)</li>
                     </ul>
-                  </small>
-                </>
-              )}
+                  </>
+                )}
+              </div>
             </Alert>
           </div>
 
-          {/* Enhanced Statistics Cards - Cập nhật theo yêu cầu */}
+          {/* Enhanced Statistics Cards */}
           <div id="dashboard" className="mb-5">
-            <h3 className="mb-4">📊 Tổng Quan Dashboard</h3>
+            <h3 className="admin-dashboard-title">
+              Tổng Quan Hệ Thống
+            </h3>
             <Row className="g-4 mb-4">
-              <Col md={2}>
-                <Card className="text-center shadow-sm h-100" style={{ borderRadius: "15px" }}>
-                  <Card.Body>
-                    <div className="display-6 text-primary">{dashboardData.totalUsers}</div>
-                    <div className="text-muted">Người dùng đã đăng ký</div>
-                  </Card.Body>
-                </Card>
+              <Col xs={12} sm={6} lg={4}>
+                <div className="admin-stat-card">
+                  <div className="stat-icon-wrapper bg-soft-primary">
+                    <i className="bi bi-people-fill">👥</i>
+                  </div>
+                  <div className="stat-value text-gradient-primary">{dashboardData.totalUsers}</div>
+                  <div className="stat-label">Người dùng đã đăng ký</div>
+                </div>
               </Col>
-              <Col md={2}>
-                <Card className="text-center shadow-sm h-100" style={{ borderRadius: "15px" }}>
-                  <Card.Body>
-                    <div className="display-6 text-success">{dashboardData.totalProducts}</div>
-                    <div className="text-muted">Số lượng SP đã lên kệ</div>
-                  </Card.Body>
-                </Card>
+              
+              <Col xs={12} sm={6} lg={4}>
+                <div className="admin-stat-card">
+                  <div className="stat-icon-wrapper bg-soft-success">
+                    <i className="bi bi-box-seam">📦</i>
+                  </div>
+                  <div className="stat-value text-gradient-success">{dashboardData.totalProducts}</div>
+                  <div className="stat-label">Tổng SP đã lên kệ</div>
+                </div>
               </Col>
-              <Col md={2}>
-                <Card className="text-center shadow-sm h-100" style={{ borderRadius: "15px" }}>
-                  <Card.Body>
-                    <div className="display-6 text-warning">{dashboardData.secondHandProductCount}</div>
-                    <div className="text-muted">Số lượng SP cũ (SecondHand)</div>
-                  </Card.Body>
-                </Card>
+
+              <Col xs={12} sm={6} lg={4}>
+                <div className="admin-stat-card">
+                  <div className="stat-icon-wrapper bg-soft-purple">
+                    <i className="bi bi-file-earmark-text">📝</i>
+                  </div>
+                  <div className="stat-value text-gradient-purple">{dashboardData.totalPosts}</div>
+                  <div className="stat-label">Tổng số bài viết</div>
+                </div>
               </Col>
-              <Col md={2}>
-                <Card className="text-center shadow-sm h-100" style={{ borderRadius: "15px" }}>
-                  <Card.Body>
-                    <div className="display-6 text-info">{dashboardData.newProductCount}</div>
-                    <div className="text-muted">Số lượng SP mới (New)</div>
-                  </Card.Body>
-                </Card>
+              
+              <Col xs={12} sm={6} lg={6}>
+                <div className="admin-stat-card">
+                  <div className="stat-icon-wrapper bg-soft-info">
+                    <i className="bi bi-stars">✨</i>
+                  </div>
+                  <div className="stat-value text-gradient-info">{dashboardData.newProductCount}</div>
+                  <div className="stat-label">SP Mới (New)</div>
+                </div>
               </Col>
-              <Col md={2}>
-                <Card className="text-center shadow-sm h-100" style={{ borderRadius: "15px" }}>
-                  <Card.Body>
-                    <div className="display-6 text-primary">{dashboardData.totalPosts}</div>
-                    <div className="text-muted">Tổng số bài post</div>
-                  </Card.Body>
-                </Card>
+
+              <Col xs={12} sm={6} lg={6}>
+                <div className="admin-stat-card">
+                  <div className="stat-icon-wrapper bg-soft-warning">
+                    <i className="bi bi-arrow-repeat">♻️</i>
+                  </div>
+                  <div className="stat-value text-gradient-warning">{dashboardData.secondHandProductCount}</div>
+                  <div className="stat-label">SP Cũ (SecondHand)</div>
+                </div>
               </Col>
             </Row>
           </div>
-
   
-
- 
         </Col>
       </Row>
     </Container>
