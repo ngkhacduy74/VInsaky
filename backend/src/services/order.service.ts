@@ -74,19 +74,18 @@ export class OrderService implements OrderAbstract {
 
 
     const fields: Record<string, any> = {
-      merchant,
-      currency: 'VND',
-      order_amount: total_prices,
-      operation: 'PURCHASE',
-      order_description: `Thanh toan don hang ${invoice}`,
-      order_invoice_number: invoice,
-      payment_method: 'BANK_TRANSFER',
-      customer_id: userId ?? 'GUEST',
-      // email: payload.shipping.email,
-      success_url: successUrl,
-      error_url: errorUrl,
-      cancel_url: cancelUrl,
-    };
+  merchant,
+  operation: 'PURCHASE',
+  payment_method: 'BANK_TRANSFER',          
+  order_amount: String(Math.round(total_prices)), 
+  currency: 'VND',
+  order_invoice_number: invoice,
+  order_description: `Thanh toan don hang ${invoice}`,
+  customer_id: userId ?? 'GUEST',
+  success_url: successUrl,
+  error_url: errorUrl,
+  cancel_url: cancelUrl,
+};
 
     const signature = sepaySignature(secretKey, fields);
     const checkoutUrl = `${baseUrl}/v1/checkout/init`;
