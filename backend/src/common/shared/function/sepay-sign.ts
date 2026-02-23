@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 
 export function sepaySignature(secretKey: string, fields: Record<string, any>) {
-  const keys = [
+  const signedOrder = [
     'merchant',
     'operation',
     'payment_method',
@@ -15,6 +15,13 @@ export function sepaySignature(secretKey: string, fields: Record<string, any>) {
     'cancel_url',
   ];
 
-  const signedString = keys.map((k) => `${k}=${fields[k] ?? ''}`).join(',');
-  return crypto.createHmac('sha256', secretKey).update(signedString).digest('base64');
+  const signedString = signedOrder
+    .filter((k) => fields[k] !== undefined)
+    .map((k) => `${k}=${fields[k] ?? ''}`)
+    .join(',');
+
+  return crypto
+    .createHmac('sha256', secretKey)
+    .update(signedString, 'utf8')
+    .digest('base64');
 }

@@ -57,16 +57,11 @@ export class OrderService implements OrderAbstract {
    
 
     const invoice = this.createInvoice();
-    console.log('[DEBUG] Start checkAndReserveStock');
     const reserveResult = await this.productRepo.checkAndReserveStock(payload.items);
-    console.log('[DEBUG] End checkAndReserveStock', reserveResult);
     if (!reserveResult.ok) {
       throw new BadRequestException(`Sản phẩm "${reserveResult.failedItemName}" không đủ số lượng trong kho`);
     }
-    console.log('[DEBUG] Start createOrder');
     await this.repo.createOrder(userId, payload, invoice, total_prices);
-    console.log('[DEBUG] End createOrder');
-
 
         
     const merchant = this.getEnvOrThrow('SEPAY_MERCHANT');
@@ -87,7 +82,7 @@ export class OrderService implements OrderAbstract {
       order_invoice_number: invoice,
       payment_method: 'BANK_TRANSFER',
       customer_id: userId ?? 'GUEST',
-      email: payload.shipping.email,
+      // email: payload.shipping.email,
       success_url: successUrl,
       error_url: errorUrl,
       cancel_url: cancelUrl,
