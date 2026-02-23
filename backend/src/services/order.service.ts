@@ -61,7 +61,7 @@ export class OrderService implements OrderAbstract {
     const reserveResult = await this.productRepo.checkAndReserveStock(payload.items);
     console.log('[DEBUG] End checkAndReserveStock', reserveResult);
     if (!reserveResult.ok) {
-      throw new BadRequestException(`Sản phẩm (Index: ${reserveResult.failedIndex}) không đủ số lượng trong kho`);
+      throw new BadRequestException(`Sản phẩm "${reserveResult.failedItemName}" không đủ số lượng trong kho`);
     }
     console.log('[DEBUG] Start createOrder');
     await this.repo.createOrder(userId, payload, invoice, total_prices);

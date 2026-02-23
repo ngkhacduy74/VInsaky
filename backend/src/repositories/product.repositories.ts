@@ -74,10 +74,10 @@ export class ProductRepository {
     return res.modifiedCount > 0;
   }
 
-  async checkAndReserveStock(items: CreateOrderItemDto[], session?: ClientSession): Promise<{ ok: true } | { ok: false; failedIndex: number }> {
+  async checkAndReserveStock(items: CreateOrderItemDto[], session?: ClientSession): Promise<{ ok: true } | { ok: false; failedItemName: string }> {
     for (let i = 0; i < items.length; i++) {
       const ok = await this.decrementIfEnough(items[i].product_id, Number(items[i].quantity), session);
-      if (!ok) return { ok: false, failedIndex: i };
+      if (!ok) return { ok: false, failedItemName: items[i].name || `Sản phẩm ${i + 1}` };
     }
     return { ok: true };
   }

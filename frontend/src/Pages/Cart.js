@@ -203,7 +203,15 @@ function Cart() {
       }
     } catch (error) {
       console.error("Checkout validation / API error:", error);
-      showToast("Lỗi kết nối tới máy chủ", "error", "❌");
+      
+      const backendMessage = error.response?.data?.message;
+      if (backendMessage) {
+        // backendMessage can be an array if it's class-validator errors
+        const msgText = Array.isArray(backendMessage) ? backendMessage[0] : backendMessage;
+        showToast(msgText, "error", "❌");
+      } else {
+        showToast("Lỗi kết nối tới máy chủ", "error", "❌");
+      }
     }
   };
 
