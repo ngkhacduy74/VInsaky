@@ -34,6 +34,7 @@ function Cart() {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
+    email: "",
     address: "",
     notes: "",
   });
@@ -66,6 +67,7 @@ function Cart() {
         ...prev,
         name: fullProfile.fullname || fullProfile.name || prev.name,
         phone: fullProfile.phone || fullProfile.phoneNumber || prev.phone,
+        email: fullProfile.email || prev.email,
         address: fullProfile.address || prev.address,
       }));
       showToast("Đã điền thông tin từ hồ sơ", "success", "✨");
@@ -76,6 +78,7 @@ function Cart() {
         ...prev,
         name: user.fullname || user.name || prev.name,
         phone: user.phone || prev.phone,
+        email: user.email || prev.email,
         address: user.address || prev.address,
       }));
       showToast("Đã điền thông tin từ hồ sơ", "success", "✨");
@@ -134,7 +137,7 @@ function Cart() {
     e.preventDefault();
 
     // Basic Validation
-    if (!formData.name.trim() || !formData.phone.trim() || !formData.address.trim()) {
+    if (!formData.name.trim() || !formData.phone.trim() || !formData.email.trim() || !formData.address.trim()) {
       showToast("Vui lòng điền đầy đủ thông tin bắt buộc", "error", "⚠️");
       return;
     }
@@ -151,6 +154,7 @@ function Cart() {
       const payload = {
         shipping: {
           fullName: formData.name,
+          email: formData.email,
           phone: formData.phone,
           addressDetail: formData.address,
           note: formData.notes
@@ -370,6 +374,17 @@ function Cart() {
                           value={formData.phone}
                           onChange={handleInputChange}
                           placeholder="VD: 0912345678"
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Email *</label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          placeholder="Nhập địa chỉ email"
                           required
                         />
                       </div>
