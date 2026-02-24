@@ -137,7 +137,7 @@ export class OrderService implements OrderAbstract {
     }
 
     if (invoice.startsWith('INV-VIP-')) {
-      if (type === 'ORDER_PAID' && amount === 199000) {
+      if (type === 'ORDER_PAID' && amount >= 25000) {
         const parts = invoice.split('-');
         if (parts.length >= 3) {
            const userId = parts[2];
