@@ -22,6 +22,12 @@ export class PublicUserDto {
 
   @Expose()
   is_active?: boolean;
+
+  @Expose()
+  isPremium?: boolean;
+
+  @Expose()
+  postCount?: number;
 }
 
 export class DeleteUserDto {
