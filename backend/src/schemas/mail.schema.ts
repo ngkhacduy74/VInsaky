@@ -6,7 +6,8 @@ export type MailDocument = Mail & Document;
 export enum MailType {
   THANK_YOU = 'THANK_YOU',
   REMIND = 'REMIND',
-  ORDER_PAID='ORDER_PAID'
+  ORDER_PAID='ORDER_PAID',
+  UPGRADE_VIP='UPGRADE_VIP'
 }
 
 export enum MailStatus {

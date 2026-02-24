@@ -16,6 +16,8 @@ import { MailService } from './mail.service';
 import { MailType } from 'src/schemas/mail.schema';
 import { orderPaidEmailHtml } from 'src/common/shared/function/order-email-template';
 
+import { UserRepository } from 'src/repositories/user.repositories';
+
 @Injectable()
 export class OrderService implements OrderAbstract {
   constructor(
@@ -23,6 +25,7 @@ export class OrderService implements OrderAbstract {
     private readonly productRepo: ProductRepository,
     private readonly mailService: MailService,
     private readonly config: ConfigService,
+    private readonly userRepo: UserRepository,
   ) {}
 
   private createInvoice(): string {
@@ -131,6 +134,27 @@ export class OrderService implements OrderAbstract {
     }
     if (!Number.isFinite(amount) || amount <= 0) {
       throw new BadRequestException('Invalid order_amount');
+    }
+
+    if (invoice.startsWith('INV-VIP-')) {
+      if (type === 'ORDER_PAID' && amount === 199000) {
+        const parts = invoice.split('-');
+        if (parts.length >= 3) {
+           const userId = parts[2];
+           await this.userRepo.updateByUserId(userId, { isPremium: true } as any);
+           try {
+              const user = await this.userRepo.findByUserId(userId);
+              if (user && user.email) {
+                 const subject = 'Nâng cấp tài khoản VIP thành công';
+                 const html = `<p>Chào ${user.fullname},</p><p>Tài khoản của bạn đã được nâng cấp lên VIP thành công. Bạn hiện có thể đăng bài không giới hạn.</p>`;
+                 await this.mailService.sendMail(user.email, subject, html, MailType.UPGRADE_VIP);
+              }
+           } catch(e) {
+              console.error('Send VIP email failed', e);
+           }
+        }
+      }
+      return { success: true };
     }
 
     const order = await this.repo.findByInvoice(invoice);

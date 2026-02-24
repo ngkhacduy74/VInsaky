@@ -5,6 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { sepaySignature } from 'src/common/shared/function/sepay-sign';
 
 import { BaseResponseDto } from 'src/common/dto/base-response.dto';
 import { UserRepository } from 'src/repositories/user.repositories';
@@ -21,6 +23,7 @@ export class UserService implements UserAbstract {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
+    private readonly config: ConfigService,
   ) {}
   async getAllUser(
     query: GetAllUserQueryDto,
@@ -35,7 +38,6 @@ export class UserService implements UserAbstract {
     const match: any = {};
 
     if (searchTerm) {
-      // Create an accent-insensitive regex pattern for Vietnamese characters
       const createAsciiRegex = (str: string) => {
         return str
           .replace(/[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬ]/g, '[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬ]')
@@ -238,6 +240,79 @@ export class UserService implements UserAbstract {
 
       throw new InternalServerErrorException({
         message: 'Lỗi khi lấy người dùng theo email',
+        errors: err?.message,
+      });
+    }
+  }
+
+  async upgradeInit(userId: string): Promise<BaseResponseDto<any>> {
+    try {
+      const user = await this.userRepository.findByUserId(userId);
+
+      if (!user) {
+        throw new NotFoundException({
+          message: 'Không tìm thấy người dùng',
+          errors: { id: 'NOT_FOUND' },
+        });
+      }
+
+      if (user.isPremium) {
+        throw new ConflictException({
+          message: 'Tài khoản của bạn đã là VIP',
+          errors: { user: 'ALREADY_PREMIUM' },
+        });
+      }
+
+      const invoice = `INV-VIP-${userId.substring(0, 8)}-${Date.now()}`;
+      const upgradePrice = 25000;
+
+      const merchant = this.config.get<string>('SEPAY_MERCHANT');
+      const secretKey = this.config.get<string>('SEPAY_SECRET_KEY');
+      const baseUrl = this.config.get<string>('SEPAY_BASE_URL');
+      const successUrl = this.config.get<string>('SEPAY_SUCCESS_URL');
+      const errorUrl = this.config.get<string>('SEPAY_ERROR_URL');
+      const cancelUrl = this.config.get<string>('SEPAY_CANCEL_URL');
+
+      if (!merchant || !secretKey || !baseUrl) {
+        throw new InternalServerErrorException('Cấu hình thanh toán bị lỗi');
+      }
+
+      const fields: Record<string, any> = {
+        merchant,
+        operation: 'PURCHASE',
+        payment_method: 'BANK_TRANSFER',          
+        order_amount: String(upgradePrice), 
+        currency: 'VND',
+        order_invoice_number: invoice,
+        order_description: `Nang cap VIP ${user.fullname}`,
+        customer_id: userId,
+        success_url: successUrl,
+        error_url: errorUrl,
+        cancel_url: cancelUrl,
+      };
+
+      const signature = sepaySignature(secretKey, fields);
+      const checkoutUrl = `${baseUrl}/v1/checkout/init`;
+
+      const html = `
+<form id="sepay" action="${checkoutUrl}" method="POST">
+  ${Object.entries({ ...fields, signature })
+    .map(([k, v]) => {
+      const safeValue = String(v ?? '').replace(/"/g, '&quot;');
+      return '<input type="hidden" name="' + k + '" value="' + safeValue + '" />';
+    })
+    .join('\n')}
+</form>
+`;
+
+      return {
+        success: true,
+        data: { html },
+      };
+    } catch (err: any) {
+      if (err?.status) throw err;
+      throw new InternalServerErrorException({
+        message: 'Khởi tạo thanh toán lỗi',
         errors: err?.message,
       });
     }

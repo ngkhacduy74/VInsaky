@@ -45,6 +45,10 @@ export class User {
 
   @Prop({ type: Boolean, required: true })
   license: boolean;
+   @Prop({ type: Boolean, default: false })
+  isPremium: boolean;
+  @Prop({ type: Number, default: 0 })
+  postCount: number;
 
   @Prop({ type: Date, default: Date.now })
   lastLoginAt: Date;

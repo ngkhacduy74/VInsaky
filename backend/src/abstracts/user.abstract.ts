@@ -21,4 +21,5 @@ export abstract class UserAbstract {
   abstract getUserByEmail(
     email: string,
   ): Promise<BaseResponseDto<PublicUserDto>>;
+  abstract upgradeInit(userId: string): Promise<BaseResponseDto<any>>;
 }

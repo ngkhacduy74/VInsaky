@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AuthAbstract } from 'src/abstracts/auth.abstract';
 import { UserAbstract } from 'src/abstracts/user.abstract';
@@ -49,5 +50,13 @@ export class UserController {
   @Roles(Role.ADMIN, Role.USER)
   async getUserByEmail(@Param('email') email: string) {
     return await this.userService.getUserByEmail(email);
+  }
+
+  @Post('upgrade/init')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.USER)
+  async upgradeInit(@Req() req: any) {
+    return await this.userService.upgradeInit(req.user.id);
   }
 }

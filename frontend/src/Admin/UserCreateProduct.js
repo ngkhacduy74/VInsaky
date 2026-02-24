@@ -15,6 +15,7 @@ import {
 import axios from "axios";
 import { Save, X, Plus, Link, ArrowLeft, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { authApiClient } from "../Services/auth.service";
 
 const UserCreateProduct = () => {
   const navigate = useNavigate();
@@ -42,6 +43,30 @@ const UserCreateProduct = () => {
   const [errors, setErrors] = useState({});
   const [showToast, setShowToast] = useState(false);
   const descriptionDivRef = useRef();
+
+  const [currentUser, setCurrentUser] = useState(null);
+  const [limitReached, setLimitReached] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await authApiClient.get("/users/me");
+        if (res.data && res.data.success) {
+          const user = res.data.data;
+          setCurrentUser(user);
+          if (user?.role !== 'Admin' && !user.isPremium && user.postCount >= 3) {
+            setLimitReached(true);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch user profile", err);
+      } finally {
+        setLoadingUser(false);
+      }
+    };
+    fetchUser();
+  }, []);
 
   // Hàm chuyển đổi toàn bộ ký tự Unicode phông lạ về Latin thường (giống admin)
   function toPlainText(str) {
@@ -668,8 +693,36 @@ const UserCreateProduct = () => {
           <div style={{ width: "52px" }}></div>
         </div>
 
-        {error && <Alert variant="danger" className="border-0 shadow-sm" style={{ borderRadius: "12px" }}>{error}</Alert>}
-        {success && <Alert variant="success" className="border-0 shadow-sm" style={{ borderRadius: "12px" }}>{success}</Alert>}
+        {loadingUser ? (
+          <div className="text-center py-5">
+            <Spinner animation="border" variant="primary" />
+            <p className="mt-3 text-muted">Đang kiểm tra thông tin tài khoản...</p>
+          </div>
+        ) : limitReached ? (
+          <Alert variant="warning" className="border-0 shadow-sm text-center py-5" style={{ borderRadius: "16px" }}>
+            <h3 className="fw-bold mb-3"><i className="bi bi-exclamation-triangle-fill text-warning me-2"></i> Đã đạt giới hạn đăng bài!</h3>
+            <p className="fs-5 text-muted mb-4">Bạn đang sử dụng gói <b>Cơ bản</b> và đã sử dụng hết 3 lượt đăng bài miễn phí.</p>
+            <Button variant="primary" size="lg" className="rounded-pill px-5 shadow-sm fw-bold mb-3" onClick={() => navigate('/upgrade')}>
+              <i className="bi bi-rocket-takeoff-fill me-2"></i> Nâng cấp tài khoản VIP ngay
+            </Button>
+            <p className="text-muted small">Mở khóa quyền đăng bài không giới hạn và huy hiệu tài khoản uy tín.</p>
+          </Alert>
+        ) : (
+          <>
+            {error && <Alert variant="danger" className="border-0 shadow-sm" style={{ borderRadius: "12px" }}>{error}</Alert>}
+            {success && <Alert variant="success" className="border-0 shadow-sm" style={{ borderRadius: "12px" }}>{success}</Alert>}
+
+            {currentUser?.role !== 'Admin' && !currentUser?.isPremium && (
+              <Alert variant="info" className="border-0 shadow-sm d-flex align-items-center justify-content-between mb-4" style={{ borderRadius: "12px" }}>
+                <div>
+                  <i className="bi bi-info-circle-fill me-2"></i>
+                  Bạn còn <b>{3 - (currentUser?.postCount || 0)}</b> lượt đăng bài miễn phí.
+                </div>
+                <Button variant="outline-primary" size="sm" className="rounded-pill fw-bold px-3" onClick={() => navigate('/upgrade')}>
+                  Nâng cấp VIP
+                </Button>
+              </Alert>
+            )}
 
         <Form onSubmit={handleSubmit}>
           {/* Section 1: Thông tin cơ bản */}
@@ -1043,6 +1096,8 @@ const UserCreateProduct = () => {
           </div>
 
         </Form>
+        </>
+        )}
       </Container>
       <Footer />
 

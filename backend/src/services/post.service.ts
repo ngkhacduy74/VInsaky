@@ -36,6 +36,12 @@ export class PostService implements PostAbstract {
     const user = await this.userRepository.findByUserId(user_id);
     if (!user) throw new NotFoundException('User không tồn tại');
 
+    if (user.role !== 'Admin' && !user.isPremium && user.postCount >= 3) {
+      throw new ConflictException(
+        'Bạn đã dùng hết lượt đăng bài. Vui lòng nâng cấp tài khoản.',
+      );
+    }
+
     try {
       const created = await this.postRepository.create({
         ...data,
@@ -46,6 +52,12 @@ export class PostService implements PostAbstract {
       const dto = plainToInstance(PostResponseDto, created.toObject(), {
         excludeExtraneousValues: true,
       });
+
+      if (user.role !== 'Admin' && !user.isPremium) {
+        await this.userRepository.updateByUserId(user_id, {
+          $inc: { postCount: 1 }
+        } as any);
+      }
 
       return { success: true, message: 'Tạo bài đăng thành công', data: dto };
     } catch (err: any) {

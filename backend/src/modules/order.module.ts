@@ -8,8 +8,10 @@ import { OrderService } from 'src/services/order.service';
 import { ProductModule } from './product.module';
 import { MailModule } from './mail.module';
 
+import { UserModule } from './user.module';
+
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]), ProductModule, MailModule],
+  imports: [MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]), ProductModule, MailModule, UserModule],
   controllers: [OrdersController],
   providers: [OrderService, OrderRepository, {
         provide: OrderAbstract,

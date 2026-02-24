@@ -576,29 +576,6 @@ const ProductView = () => {
                     Thêm vào yêu thích
                   </button>
                 )}
-                <button
-                  type="button"
-                  className="pdv-btn-cart"
-                  onClick={() => {
-                    addToCart(product, quantity);
-                    setCartToast({ text: `Đã thêm ${quantity} sản phẩm vào giỏ hàng`, icon: '🛒' });
-                    setTimeout(() => setCartToast(null), 2800);
-                  }}
-                >
-                  <i className="fas fa-shopping-cart"></i>
-                  Thêm vào giỏ hàng
-                </button>
-                <button
-                  type="button"
-                  className="pdv-btn-buy"
-                  onClick={() => {
-                    addToCart(product, quantity);
-                    navigate('/cart');
-                  }}
-                >
-                  <i className="fas fa-bolt"></i>
-                  Mua ngay
-                </button>
               </div>
 
               {product.quantity !== undefined &&
