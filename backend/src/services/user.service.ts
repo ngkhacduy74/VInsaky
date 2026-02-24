@@ -286,9 +286,9 @@ export class UserService implements UserAbstract {
         order_invoice_number: invoice,
         order_description: `Nang cap VIP ${user.fullname}`,
         customer_id: userId,
-        success_url: successUrl,
-        error_url: errorUrl,
-        cancel_url: cancelUrl,
+        success_url: `${successUrl}?orderCode=${invoice}`,
+        error_url: `${errorUrl}?orderCode=${invoice}`,
+        cancel_url: `${cancelUrl}?orderCode=${invoice}`,
       };
 
       const signature = sepaySignature(secretKey, fields);

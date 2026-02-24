@@ -85,9 +85,9 @@ export class OrderService implements OrderAbstract {
   order_invoice_number: invoice,
   order_description: `Thanh toan don hang ${invoice}`,
   customer_id: userId ?? 'GUEST',
-  success_url: successUrl,
-  error_url: errorUrl,
-  cancel_url: cancelUrl,
+  success_url: `${successUrl}?orderCode=${invoice}`,
+  error_url: `${errorUrl}?orderCode=${invoice}`,
+  cancel_url: `${cancelUrl}?orderCode=${invoice}`,
 };
 
     const signature = sepaySignature(secretKey, fields);
