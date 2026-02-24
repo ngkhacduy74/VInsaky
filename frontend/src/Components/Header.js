@@ -681,7 +681,7 @@ function Header() {
               {/* User Profile */}
               <div className="dropdown">
                 <button
-                  className="btn btn-light rounded-circle p-2 dropdown-toggle header-user-button"
+                  className="btn btn-light rounded-circle p-2 dropdown-toggle header-user-button position-relative"
                   type="button"
                   id="userDropdown"
                   data-bs-toggle="dropdown"
@@ -698,6 +698,15 @@ function Header() {
                   >
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                   </svg>
+                  {user?.isPremium && (
+                    <span 
+                      className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark border border-white"
+                      style={{ padding: "0.25em 0.4em" }}
+                      title="Thành viên VIP"
+                    >
+                      <i className="bi bi-star-fill" style={{ fontSize: "0.6rem" }}></i>
+                    </span>
+                  )}
                 </button>
                 <ul
                   className="dropdown-menu dropdown-menu-end shadow-lg header-dropdown-menu"
@@ -716,8 +725,11 @@ function Header() {
                   {user ? (
                     <>
                       <li>
-                        <h6 className="dropdown-header text-primary fw-bold px-3 py-2 header-dropdown-header">
-                          Xin chào, {user.name || user.email}
+                        <h6 className="dropdown-header header-dropdown-title">
+                          Xin chào, {user.name || user.fullname || user.email}
+                          {user.isPremium && (
+                            <i className="bi bi-star-fill text-warning ms-2" title="Thành viên VIP"></i>
+                          )}
                         </h6>
                       </li>
                       <li>
@@ -752,7 +764,7 @@ function Header() {
                           Sản phẩm yêu thích
                         </Link>
                       </li>
-                      {user.role && user.role.toLowerCase() !== "admin" && (
+                      {user.role && user.role.toLowerCase() !== "admin" && !user.isPremium && (
                         <li>
                           <Link
                             className="dropdown-item px-3 py-2 header-dropdown-item text-warning fw-bold"
