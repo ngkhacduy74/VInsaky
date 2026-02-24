@@ -43,8 +43,8 @@ export class User {
   @Prop({ type: Boolean, required: false })
   is_active?: boolean;
 
-  @Prop({ type: Boolean, required: true })
-  license: boolean;
+  @Prop({ type: Boolean, required: false })
+  license?: boolean;
    @Prop({ type: Boolean, default: false })
   isPremium: boolean;
   @Prop({ type: Number, default: 0 })

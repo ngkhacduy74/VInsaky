@@ -52,7 +52,8 @@ export class RegisterDto {
   ava_img_url?: string;
 
   @IsBoolean({ message: 'License phải là true hoặc false' })
-  license: boolean;
+  @IsOptional()
+  license?: boolean;
 }
 
 export type RegisterResponse = {

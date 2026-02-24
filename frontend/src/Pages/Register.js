@@ -212,7 +212,6 @@ Email: privacy@vinsaky.com
     try {
       let ava_img_url = "";
       
-      // Upload image if provided
       if (imageFile) {
         const formData = new FormData();
         formData.append('img', imageFile);
@@ -223,14 +222,14 @@ Email: privacy@vinsaky.com
         }
       }
 
-      // Prepare registration data
       const registerData = {
         fullname: fullname.trim(),
         email: email.trim(),
         phone: phone.trim(),
         address: address.trim(),
         password: password,
-        gender: gender
+        gender: gender,
+        license: termsAccepted
       };
 
       // Only add ava_img_url if an image was uploaded
@@ -266,8 +265,11 @@ Email: privacy@vinsaky.com
       
       if (error.response) {
         // Handle validation errors from backend
-        if (error.response.status === 400 && error.response.data.errors) {
-          const errorMessages = error.response.data.errors.map(err => err.message).join('\n');
+        if (error.response.status === 400 && (error.response.data.errors || error.response.data.message)) {
+          const errorSource = error.response.data.message || error.response.data.errors;
+          const errorMessages = Array.isArray(errorSource) 
+            ? errorSource.map(err => typeof err === 'string' ? err : err.message).join('\n')
+            : errorSource;
           alert(`Lỗi validation:\n${errorMessages}`);
         } else {
           const errorMessage = error.response.data?.message || error.response.data?.error || "Đăng ký thất bại";
