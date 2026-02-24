@@ -21,7 +21,7 @@ export class LoginDto {
 
 export type PublicUser = Pick<
   User,
-  'id' | 'fullname' | 'email' | 'role' | 'ava_img_url' | 'phone' | 'address'
+  'id' | 'fullname' | 'email' | 'role' | 'ava_img_url' | 'phone' | 'address' | 'isPremium' | 'postCount'
 >;
 
 export type LoginResponse = {

@@ -31,6 +31,10 @@ export default function PaymentSuccess() {
         try {
           const res = await authApiClient.get("/users/me");
           if (res.data?.success && res.data?.data?.isPremium) {
+             const updatedUser = res.data.data;
+             // Update localStorage cache so Header.js reads the new VIP status on navigation/refresh
+             localStorage.setItem("user", JSON.stringify(updatedUser));
+             
              setVipStatus("success");
              setLoading(false);
              clearInterval(pollVip);

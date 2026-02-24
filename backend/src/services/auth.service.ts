@@ -89,6 +89,8 @@ export class AuthService implements AuthAbstract {
       ava_img_url: user.ava_img_url,
       phone: user.phone,
       address: user.address,
+      isPremium: user.isPremium,
+      postCount: user.postCount,
     };
 
     return {
@@ -134,6 +136,8 @@ export class AuthService implements AuthAbstract {
         email: created.email,
         role: created.role,
         ava_img_url: created.ava_img_url,
+        isPremium: created.isPremium,
+        postCount: created.postCount,
       };
 
       return {
@@ -226,6 +230,8 @@ export class AuthService implements AuthAbstract {
         ava_img_url: user.ava_img_url,
         phone: user.phone,
         address: user.address,
+        isPremium: user.isPremium,
+        postCount: user.postCount,
       };
 
       return {
