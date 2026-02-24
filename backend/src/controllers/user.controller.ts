@@ -29,6 +29,14 @@ export class UserController {
   async getAllUser(@Query() data: GetAllUserQueryDto) {
     return await this.userService.getAllUser(data);
   }
+
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async getMe(@Req() req: any) {
+    return await this.userService.getUserById(req.user.id);
+  }
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RoleGuard)
