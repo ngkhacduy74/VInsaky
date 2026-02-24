@@ -138,9 +138,10 @@ export class OrderService implements OrderAbstract {
 
     if (invoice.startsWith('INV-VIP-')) {
       if (type === 'ORDER_PAID' && amount >= 25000) {
-        const parts = invoice.split('-');
-        if (parts.length >= 3) {
-           const userId = parts[2];
+        const payloadStr = invoice.split('INV-VIP-')[1]; // Get the part after prefix
+        if (payloadStr) {
+           const lastDashIndex = payloadStr.lastIndexOf('-');
+           const userId = payloadStr.substring(0, lastDashIndex);
            await this.userRepo.updateByUserId(userId, { isPremium: true } as any);
            try {
               const user = await this.userRepo.findByUserId(userId);

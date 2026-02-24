@@ -263,7 +263,7 @@ export class UserService implements UserAbstract {
         });
       }
 
-      const invoice = `INV-VIP-${userId.substring(0, 8)}-${Date.now()}`;
+      const invoice = `INV-VIP-${userId}-${Date.now()}`;
       const upgradePrice = 25000;
 
       const merchant = this.config.get<string>('SEPAY_MERCHANT');
