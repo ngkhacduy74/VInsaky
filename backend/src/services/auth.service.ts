@@ -18,8 +18,10 @@ import {
   RegisterDto,
   RegisterResponse,
 } from 'src/dtos/request/auth/register.dto';
-import { EmailProducer } from './producers/email.producer';
+import { EmailProducer } from './rabbitmq/producers/email.producer';
 import { welcomeRegisterEmail } from 'src/common/shared/function/register-email-template';
+import { BullMQService } from './bullmq.service';
+import { MailType } from 'src/schemas/mail.schema';
 
 @Injectable()
 export class AuthService implements AuthAbstract {
@@ -27,6 +29,7 @@ export class AuthService implements AuthAbstract {
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly emailProducer: EmailProducer,
+    private readonly bullMQ: BullMQService,
   ) {}
 
   async login(data: LoginDto): Promise<BaseResponseDto<LoginResponse>> {
@@ -142,11 +145,26 @@ export class AuthService implements AuthAbstract {
         postCount: created.postCount,
       };
       const email = welcomeRegisterEmail(created);
+      //rabbitmq
       await this.emailProducer.sendEmailJob({
-        email: created.email,
-        subject: 'Welcome to system',
-        html: email,
+        to: created.email,
+        subject: 'Chào mừng bạn đến với Vinsaky',
+        content: email,
+        type: MailType.WELCOME,
       });
+
+      //bullmq
+      try {
+        await this.bullMQ.sendWelcomeEmail({
+          receiver: created.email,
+          subject: 'Chào mừng bạn đến với Vinsaky',
+          content: email,
+          type: MailType.WELCOME,
+        });
+      } catch (err) {
+        console.error('Queue error:', err);
+      }
+
       return {
         success: true,
         data: {

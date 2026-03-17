@@ -3,7 +3,7 @@ import * as amqp from 'amqplib';
 import { RabbitMQService } from 'src/configs/rabbitmq.config';
 
 import { MailType } from 'src/schemas/mail.schema';
-import { MailService } from '../mail.service';
+import { MailService } from 'src/services/mail.service';
 
 @Injectable()
 export class EmailConsumer implements OnModuleInit {
@@ -13,7 +13,7 @@ export class EmailConsumer implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    const channel = await this.rabbit.connect();
+    const channel = this.rabbit.getChannel() || (await this.rabbit.connect());
 
     await channel.assertQueue('email_queue', { durable: true });
 
@@ -24,15 +24,16 @@ export class EmailConsumer implements OnModuleInit {
         const data = JSON.parse(msg.content.toString());
 
         await this.mailService.sendMail(
-          data.email,
+          data.receiver,
           data.subject,
-          data.html,
-          MailType.WELCOME,
+          data.content,
+          data.type,
         );
 
         channel.ack(msg);
       } catch (error) {
         console.error('Email send failed:', error);
+        channel.nack(msg, false, false);
       }
     });
   }

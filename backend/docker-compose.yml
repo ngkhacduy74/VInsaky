@@ -9,13 +9,12 @@ services:
       REDIS_PORT: 6379
     volumes:
       - ./:/app
-      - /app/node_modules
     command: ['node', 'dist/main']
     networks:
       - backend
     depends_on:
       - redis
-      - rabbitmq
+      # - rabbitmq
 
   redis:
     image: redis:alpine

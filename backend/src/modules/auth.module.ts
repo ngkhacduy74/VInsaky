@@ -7,6 +7,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from './user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RabbitMQModule } from './rabbitmq.module';
+import { BullModule } from '@nestjs/bullmq';
+import { BullMQService } from 'src/services/bullmq.service';
+import { BullMQModule } from './bullmq.module';
 
 @Module({
   imports: [
@@ -18,6 +21,7 @@ import { RabbitMQModule } from './rabbitmq.module';
       }),
       inject: [ConfigService],
     }),
+    BullMQModule,
     UserModule,
     RabbitMQModule,
   ],

@@ -24,6 +24,8 @@ import { PostModule } from './post.module';
 import { OrdersModule } from './order.module';
 import { MailModule } from './mail.module';
 import { RabbitMQModule } from './rabbitmq.module';
+import { BullMQModule } from './bullmq.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -34,6 +36,14 @@ import { RabbitMQModule } from './rabbitmq.module';
         uri: config.get<string>('DB_URL'),
       }),
     }),
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: Number(process.env.REDIS_PORT) || 6379,
+      },
+    }),
+    BullMQModule,
+
     // ThrottlerModule.forRoot({
     //   throttlers: [
     //     {
@@ -50,7 +60,7 @@ import { RabbitMQModule } from './rabbitmq.module';
     PostModule,
     MailModule,
     OrdersModule,
-    RabbitMQModule,
+    // RabbitMQModule,
   ],
   controllers: [],
   providers: [
