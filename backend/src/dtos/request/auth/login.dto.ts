@@ -24,7 +24,7 @@ export type PublicUser = Pick<
   'id' | 'fullname' | 'email' | 'role' | 'ava_img_url' | 'phone' | 'address' | 'isPremium' | 'postCount'
 >;
 
-export type LoginResponse = {
+export class LoginResponse {
   accessToken: string;
   refreshToken: string;
   user: PublicUser;

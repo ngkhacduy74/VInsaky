@@ -12,7 +12,8 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { PostAbstract } from 'src/abstracts/post.abstract';
+import { ApiTags } from '@nestjs/swagger';
+import { PostAbstract } from 'src/abstracts/services/post.abstract';
 import { Role, Roles } from 'src/decorators/role.decorator';
 import { ChangePostConditionDto } from 'src/dtos/request/post/change-post-condition.dto';
 import { CreateCommentDto } from 'src/dtos/request/post/create-comment.dto';
@@ -21,7 +22,7 @@ import { GetAllPostQueryDto } from 'src/dtos/request/post/get-all-post.dto';
 import { UpdatePostDto } from 'src/dtos/request/post/update-post.dto';
 import { JwtAuthGuard } from 'src/guard/permission.guard';
 import { RoleGuard } from 'src/guard/role.guard';
-
+@ApiTags ('posts')
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostAbstract) {}

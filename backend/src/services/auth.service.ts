@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from 'src/dtos/request/auth/login.dto';
 import { v4 as uuidv4, v4 } from 'uuid';
 import { LoginResponse, PublicUser } from 'src/dtos/request/auth/login.dto';
-import { AuthAbstract } from 'src/abstracts/auth.abstract';
+import { AuthAbstract } from 'src/abstracts/services/auth.abstract';
 import { BaseResponseDto } from 'src/common/dto/base-response.dto';
 import { UserRepository } from 'src/repositories/user.repositories';
 import { RefreshTokenDto } from 'src/dtos/request/auth/refresh-token.dto';
@@ -22,11 +22,12 @@ import { EmailProducer } from './rabbitmq/producers/email.producer';
 import { welcomeRegisterEmail } from 'src/common/shared/function/register-email-template';
 import { BullMQService } from './bullmq.service';
 import { MailType } from 'src/schemas/mail.schema';
+import { UserRepoAbstract } from 'src/abstracts/repositories/user.repositories';
 
 @Injectable()
 export class AuthService implements AuthAbstract {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: UserRepoAbstract,
     private readonly jwtService: JwtService,
     private readonly emailProducer: EmailProducer,
     private readonly bullMQ: BullMQService,

@@ -15,15 +15,16 @@ import { CreatePostDto } from 'src/dtos/request/post/create-post.dto';
 import { GetAllPostQueryDto } from 'src/dtos/request/post/get-all-post.dto';
 import { PostResponseDto } from 'src/dtos/response/post.dto';
 import { PaginationResponse } from 'src/dtos/response/paging.dto';
-import { PostAbstract } from 'src/abstracts/post.abstract';
+import { PostAbstract } from 'src/abstracts/services/post.abstract';
 import { UpdatePostDto } from 'src/dtos/request/post/update-post.dto';
 import { ChangePostConditionDto } from 'src/dtos/request/post/change-post-condition.dto';
 import { CreateCommentDto } from 'src/dtos/request/post/create-comment.dto';
+import { PostRepoAbstract } from 'src/abstracts/repositories/post.repositories';
 
 @Injectable()
 export class PostService implements PostAbstract {
   constructor(
-    private readonly postRepository: PostRepository,
+    private readonly postRepository: PostRepoAbstract,
     private readonly userRepository: UserRepository,
   ) {}
 

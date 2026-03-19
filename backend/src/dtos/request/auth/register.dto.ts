@@ -56,6 +56,6 @@ export class RegisterDto {
   license?: boolean;
 }
 
-export type RegisterResponse = {
+export class RegisterResponse {
   user: PublicUserDto;
 };

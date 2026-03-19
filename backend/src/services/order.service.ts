@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { BaseResponseDto } from 'src/common/dto/base-response.dto';
-import { OrderAbstract } from 'src/abstracts/order.abstract';
+import { OrderAbstract } from 'src/abstracts/services/order.abstract';
 import { CreateOrderDto } from 'src/dtos/request/order/create-order.dto';
 import { OrderResponseDto } from 'src/dtos/response/order.dto';
 import { SepayCheckoutResponseDto } from 'src/dtos/response/sepay-checkout-response.dto';
@@ -17,11 +17,12 @@ import { MailType } from 'src/schemas/mail.schema';
 import { orderPaidEmailHtml } from 'src/common/shared/function/order-email-template';
 
 import { UserRepository } from 'src/repositories/user.repositories';
+import { OrderRepoAbstract } from 'src/abstracts/repositories/order.repositories';
 
 @Injectable()
 export class OrderService implements OrderAbstract {
   constructor(
-    private readonly repo: OrderRepository,
+    private readonly repo: OrderRepoAbstract,
     private readonly productRepo: ProductRepository,
     private readonly mailService: MailService,
     private readonly config: ConfigService,

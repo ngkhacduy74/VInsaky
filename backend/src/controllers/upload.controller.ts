@@ -4,9 +4,10 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { UploadImageInterceptor } from 'src/interceptors/upload-image.interceptor';
 import { UploadVideoInterceptor } from 'src/interceptors/upload-video.interceptor';
-
+@ApiTags('file')
 @Controller('file')
 export class UploadsController {
   @Post('upload-image')

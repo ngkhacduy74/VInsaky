@@ -3,10 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Model } from 'mongoose';
 import { Order, OrderDocument } from 'src/schemas/order.schema';
 import { CreateOrderDto, CreateOrderItemDto } from 'src/dtos/request/order/create-order.dto';
+import { OrderRepoAbstract } from 'src/abstracts/repositories/order.repositories';
 
 
 @Injectable()
-export class OrderRepository {
+export class OrderRepository implements OrderRepoAbstract{
   constructor(@InjectModel(Order.name) private readonly model: Model<OrderDocument>) {}
 
   async startTransactionSession(): Promise<ClientSession> {
@@ -26,7 +27,7 @@ export class OrderRepository {
         user_id: userId || 'GUEST',
         shipping: dto.shipping,
         items: dto.items,
-        total: total_prices, // tốt hơn: truyền total_prices đã tính từ DB
+        total: total_prices, 
         status: 'pending',
         sepay: { orderInvoiceNumber: invoice, status: 'pending' },
       },
@@ -55,11 +56,12 @@ export class OrderRepository {
    async checkTotal(items: CreateOrderItemDto[]) {
     return items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   }
-  async markEmailSent(invoice: string, session?: ClientSession) {
-  return this.model.updateOne(
+  async markEmailSent(invoice: string, session?: ClientSession): Promise<boolean> {
+  const result = await this.model.updateOne(
     { 'sepay.orderInvoiceNumber': invoice, emailSentAt: { $exists: false } },
     { $set: { emailSentAt: new Date() } },
     session ? { session } : undefined,
   );
+  return result.modifiedCount > 0;
 }
 }

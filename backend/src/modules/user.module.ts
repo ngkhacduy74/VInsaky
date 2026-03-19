@@ -2,13 +2,14 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { UserAbstract } from 'src/abstracts/user.abstract';
+import { UserAbstract } from 'src/abstracts/services/user.abstract';
 import { UserController } from 'src/controllers/user.controller';
 import { UserRepository } from 'src/repositories/user.repositories';
 import { User, UserSchema } from 'src/schemas/user.schema';
 import { UserService } from 'src/services/user.service';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserRepoAbstract } from 'src/abstracts/repositories/user.repositories';
 
 @Module({
   imports: [
@@ -27,6 +28,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   providers: [
     UserRepository,
     UserService,
+    {
+      provide: UserRepoAbstract,
+      useClass: UserRepository,   
+    },
     {
       provide: UserAbstract,
       useClass: UserService,

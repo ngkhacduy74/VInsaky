@@ -12,18 +12,24 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ProductAbstract } from 'src/abstracts/product.abstract';
+import { ApiTags } from '@nestjs/swagger';
+import { ProductAbstract } from 'src/abstracts/services/product.abstract';
+import { ApiDescription } from 'src/decorators/http.decorators';
 import { Role, Roles } from 'src/decorators/role.decorator';
 import { CreateProductDto } from 'src/dtos/request/product/create-product.dto';
 import { SearchProductsDto } from 'src/dtos/request/product/search-product.dto';
 import { UpdateProductDto } from 'src/dtos/request/product/update-product.dto';
+import { ProductResponseDto } from 'src/dtos/response/product.dto';
 import { JwtAuthGuard } from 'src/guard/permission.guard';
 import { RoleGuard } from 'src/guard/role.guard';
-
+@ApiTags('products')
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductAbstract) {}
+
   @Post()
+  @ApiDescription({ summary: 'Tạo sản phẩm mới' ,type: ProductResponseDto})
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.CREATED)
@@ -31,6 +37,7 @@ export class ProductController {
     return await this.productService.createProduct(body);
   }
   @Patch(':id')
+  @ApiDescription({ summary: 'Cập nhật thông tin sản phẩm' ,type: ProductResponseDto})
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.OK)
@@ -38,6 +45,7 @@ export class ProductController {
     return await this.productService.updateProduct(id, body);
   }
   @Delete(':id')
+  @ApiDescription({ summary: 'Xóa sản phẩm' ,type: ProductResponseDto})
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.OK)
@@ -45,11 +53,13 @@ export class ProductController {
     return await this.productService.deleteProduct(id);
   }
   @Get('brands')
+  @ApiDescription({ summary: 'Lấy danh sách thương hiệu' ,type: [String] })
   @HttpCode(HttpStatus.OK)
   async loadAllBrands() {
     return await this.productService.loadAllBrands();
   }
   @Get()
+  @ApiDescription({ summary: 'Lấy danh sách sản phẩm' ,type: [ProductResponseDto] })
   // @UseGuards(JwtAuthGuard, RoleGuard)
   // @Roles(Role.ADMIN, Role.USER)
   @HttpCode(HttpStatus.OK)
@@ -57,6 +67,7 @@ export class ProductController {
     return await this.productService.searchProducts(query);
   }
   @Get(':id')
+  @ApiDescription({ summary: 'Lấy thông tin sản phẩm' ,type: ProductResponseDto })
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.ADMIN, Role.USER)
   @HttpCode(HttpStatus.OK)

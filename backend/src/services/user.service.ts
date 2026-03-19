@@ -7,12 +7,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { sepaySignature } from 'src/common/shared/function/sepay-sign';
-
 import { BaseResponseDto } from 'src/common/dto/base-response.dto';
 import { UserRepository } from 'src/repositories/user.repositories';
-
-import { User } from 'src/schemas/user.schema';
-import { UserAbstract } from 'src/abstracts/user.abstract';
+import { UserAbstract } from 'src/abstracts/services/user.abstract';
 import { GetAllUserQueryDto } from 'src/dtos/request/user/get-all-user-query.dto';
 import { PaginationResponse } from 'src/dtos/response/paging.dto';
 import { DeleteUserDto, PublicUserDto } from 'src/dtos/response/user.dto';

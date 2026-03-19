@@ -10,7 +10,8 @@ import { JwtAuthGuard } from 'src/guard/permission.guard';
 import { RoleGuard } from 'src/guard/role.guard';
 import { Role, Roles } from 'src/decorators/role.decorator';
 import { DashboardService } from 'src/services/dashboard.service';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('dashboard')
 @Controller('dashboard')
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}

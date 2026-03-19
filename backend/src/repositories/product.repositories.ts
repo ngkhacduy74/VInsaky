@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ClientSession, Model, UpdateQuery } from 'mongoose';
-import { LoginDto } from 'src/dtos/request/auth/login.dto';
+import { ClientSession, Model } from 'mongoose';
 import { CreateOrderItemDto } from 'src/dtos/request/order/create-order.dto';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
-import { User, UserDocument } from 'src/schemas/user.schema';
-import mongoose from 'mongoose';
+import { ProductRepoAbstract } from 'src/abstracts/repositories/product.repositories';
 
 @Injectable()
-export class ProductRepository {
+export class ProductRepository implements ProductRepoAbstract{
   constructor(
     @InjectModel(Product.name)
     private readonly productModel: Model<ProductDocument>,
@@ -17,7 +15,7 @@ export class ProductRepository {
     const doc = new this.productModel(payload);
     return await doc.save();
   }
-  async findAllProducts(skip: number, limit: number) {
+  async findAllProducts(skip: number, limit: number): Promise<ProductDocument[]> {
     return this.productModel
       .find({})
       .sort({ createdAt: -1 })
@@ -35,12 +33,12 @@ export class ProductRepository {
   async loadAllBrands(): Promise<string[]> {
     return this.productModel.distinct('brand').exec();
   }
-  async updateByProductId(id: string, data: any) {
+  async updateByProductId(id: string, data: any): Promise<ProductDocument | null> {
     return this.productModel
       .findOneAndUpdate({ id }, { $set: data }, { new: true })
       .exec();
   }
-  async deleteByProductId(id: string) {
+  async deleteByProductId(id: string): Promise<ProductDocument | null> {
     return this.productModel.findOneAndDelete({ id }).exec();
   }
   async searchProducts(
@@ -48,7 +46,7 @@ export class ProductRepository {
     skip: number,
     limit: number,
     sort: Record<string, 1 | -1>,
-  ) {
+  ):Promise<ProductDocument[]> {
     return this.productModel
       .find(query)
       .sort(sort)
@@ -57,7 +55,6 @@ export class ProductRepository {
       .lean()
       .exec();
   }
-
   async countSearchProducts(query: Record<string, any>): Promise<number> {
     return this.productModel.countDocuments(query).exec();
   }
@@ -73,7 +70,6 @@ export class ProductRepository {
     );
     return res.modifiedCount > 0;
   }
-
   async checkAndReserveStock(items: CreateOrderItemDto[], session?: ClientSession): Promise<{ ok: true } | { ok: false; failedItemName: string }> {
     for (let i = 0; i < items.length; i++) {
       const ok = await this.decrementIfEnough(items[i].product_id, Number(items[i].quantity), session);

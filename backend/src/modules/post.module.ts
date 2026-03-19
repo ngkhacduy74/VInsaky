@@ -13,7 +13,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { PostController } from 'src/controllers/post.controller';
 import { PostService } from 'src/services/post.service';
 import { PostRepository } from 'src/repositories/post.repositories';
-import { PostAbstract } from 'src/abstracts/post.abstract';
+import { PostAbstract } from 'src/abstracts/services/post.abstract';
+import { PostRepoAbstract } from 'src/abstracts/repositories/post.repositories';
 
 @Module({
   imports: [
@@ -28,6 +29,9 @@ import { PostAbstract } from 'src/abstracts/post.abstract';
     {
       provide: PostAbstract,
       useClass: PostService,
+    },{
+      provide: PostRepoAbstract,
+      useClass: PostRepository,
     },
   ],
   exports: [PostAbstract, PostRepository],

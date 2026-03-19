@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ProductAbstract } from 'src/abstracts/product.abstract';
+import { ProductAbstract } from 'src/abstracts/services/product.abstract';
 
-import { UserAbstract } from 'src/abstracts/user.abstract';
+import { UserAbstract } from 'src/abstracts/services/user.abstract';
 import { ProductController } from 'src/controllers/product.controller';
 import { UserController } from 'src/controllers/user.controller';
 import { ProductRepository } from 'src/repositories/product.repositories';

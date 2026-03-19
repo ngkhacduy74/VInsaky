@@ -2,10 +2,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { PostRepoAbstract } from 'src/abstracts/repositories/post.repositories';
 import { Post, PostDocument } from 'src/schemas/post.schema';
 
 @Injectable()
-export class PostRepository {
+export class PostRepository implements PostRepoAbstract {
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
   ) {}
@@ -39,7 +40,7 @@ export class PostRepository {
   updateById(id: string, update: Record<string, any>) {
     return this.postModel.findByIdAndUpdate(id, update, { new: true });
   }
-  deleteById(id: string) {
+  deleteById(id: string): Promise<PostDocument | null> {
     return this.postModel.findByIdAndDelete(id);
   }
 }

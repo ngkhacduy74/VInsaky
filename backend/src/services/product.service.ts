@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 
 import { BaseResponseDto } from 'src/common/dto/base-response.dto';
-import { ProductAbstract } from 'src/abstracts/product.abstract';
+import { ProductAbstract } from 'src/abstracts/services/product.abstract';
 import { ProductRepository } from 'src/repositories/product.repositories';
 import { CreateProductDto } from 'src/dtos/request/product/create-product.dto';
 import { ProductResponseDto } from 'src/dtos/response/product.dto';
@@ -16,10 +16,11 @@ import { PaginationResponse } from 'src/dtos/response/paging.dto';
 import { GetAllProductQueryDto } from 'src/dtos/request/product/get-all-product.dto';
 import { UpdateProductDto } from 'src/dtos/request/product/update-product.dto';
 import { SearchProductsDto } from 'src/dtos/request/product/search-product.dto';
+import { ProductRepoAbstract } from 'src/abstracts/repositories/product.repositories';
 
 @Injectable()
 export class ProductService implements ProductAbstract {
-  constructor(private readonly productRepositories: ProductRepository) {}
+  constructor(private readonly productRepositories: ProductRepoAbstract) {}
   async createProduct(
     data: CreateProductDto,
   ): Promise<BaseResponseDto<ProductResponseDto>> {

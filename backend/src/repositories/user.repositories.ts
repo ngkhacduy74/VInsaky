@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateQuery } from 'mongoose';
-import { LoginDto } from 'src/dtos/request/auth/login.dto';
+import { Model } from 'mongoose';
+import { UserRepoAbstract } from 'src/abstracts/repositories/user.repositories';
 import { User, UserDocument } from 'src/schemas/user.schema';
 
 @Injectable()
-export class UserRepository {
+export class UserRepository  implements UserRepoAbstract {
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
@@ -33,13 +33,13 @@ export class UserRepository {
       .lean()
       .exec();
   }
-  async updateByUserId(id: string, payload: Record<string, any>) {
+  async updateByUserId(id: string, payload: Record<string, any>) : Promise<UserDocument | null> {
     return this.userModel
       .findOneAndUpdate({ id }, payload, { new: true })
       .lean()
       .exec();
   }
-  async findByUserId(id: string): Promise<User | null> {
+  async findByUserId(id: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ id }).lean().exec();
   }
   async softDeleteByUserId(id: string): Promise<UserDocument | null> {
