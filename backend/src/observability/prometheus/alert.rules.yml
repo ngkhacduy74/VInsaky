@@ -1,0 +1,57 @@
+groups:
+  - name: vinsaky_backend_alerts
+    rules:
+      # 1. Cảnh báo khi bất kỳ service nào sập (Down)
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Dịch vụ {{ $labels.job }} đã sập!'
+          description: 'Container {{ $labels.instance }} không phản hồi trong hơn 1 phút.'
+
+      # 2. Cảnh báo lỗi 5xx ở Backend quá cao (Lỗi code hoặc sập DB)
+      - alert: HighHttp5xxErrorRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Tỷ lệ lỗi 5xx cao bất thường ở Backend'
+          description: 'Backend đang trả về hơn 5% lỗi server trong 5 phút qua.'
+
+      # 3. Cảnh báo Backend phản hồi chậm (Latancy)
+      - alert: SlowResponseTime
+        expr: http_request_duration_seconds_sum / http_request_duration_seconds_count > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Backend phản hồi chậm'
+          description: 'Thời gian phản hồi trung bình đang vượt quá 500ms.'
+
+      # 4. Cảnh báo Redis hết bộ nhớ
+      - alert: RedisOutMemory
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Redis sắp hết RAM'
+          description: 'Redis đã sử dụng hơn 90% dung lượng bộ nhớ cho phép.'
+
+      # 5. Cảnh báo RabbitMQ bị kẹt tin nhắn (Message Queue bị nghẽn)
+      - alert: RabbitMQMessagePilingUp
+        expr: rabbitmq_queue_messages_ready > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Hàng đợi RabbitMQ bị tắc nghẽn'
+          description: 'Có hơn 1000 tin nhắn đang chờ xử lý trong Queue.'
+
+  - name: vinsaky_recording_rules
+    rules:
+      - record: job:http_requests:rate5m
+        expr: sum by (job) (rate(http_requests_total[5m]))

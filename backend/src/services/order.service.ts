@@ -43,31 +43,35 @@ export class OrderService implements OrderAbstract {
     userId: string,
     payload: CreateOrderDto,
   ): Promise<BaseResponseDto<SepayCheckoutResponseDto>> {
-    
     if (!payload?.items || payload.items.length === 0) {
       throw new BadRequestException('Thiếu thông tin sản phẩm');
     }
     if (!payload?.shipping?.email) {
-  throw new BadRequestException('Thiếu email');
-}
-     if (!payload?.shipping?.fullName || !payload?.shipping?.phone || !payload?.shipping?.addressDetail) {
+      throw new BadRequestException('Thiếu email');
+    }
+    if (
+      !payload?.shipping?.fullName ||
+      !payload?.shipping?.phone ||
+      !payload?.shipping?.addressDetail
+    ) {
       throw new BadRequestException('Thiếu thông tin giao hàng');
     }
     const total_prices = await this.repo.checkTotal(payload.items);
     if (!Number.isFinite(total_prices) || total_prices <= 0) {
-  throw new BadRequestException('Không lấy được giá tiền sản phẩm');
-}
-   
-   
+      throw new BadRequestException('Không lấy được giá tiền sản phẩm');
+    }
 
     const invoice = this.createInvoice();
-    const reserveResult = await this.productRepo.checkAndReserveStock(payload.items);
+    const reserveResult = await this.productRepo.checkAndReserveStock(
+      payload.items,
+    );
     if (!reserveResult.ok) {
-      throw new BadRequestException(`Sản phẩm "${reserveResult.failedItemName}" không đủ số lượng trong kho`);
+      throw new BadRequestException(
+        `Sản phẩm "${reserveResult.failedItemName}" không đủ số lượng trong kho`,
+      );
     }
     await this.repo.createOrder(userId, payload, invoice, total_prices);
 
-        
     const merchant = this.getEnvOrThrow('SEPAY_MERCHANT');
     const secretKey = this.getEnvOrThrow('SEPAY_SECRET_KEY');
     const baseUrl = this.getEnvOrThrow('SEPAY_BASE_URL');
@@ -75,21 +79,19 @@ export class OrderService implements OrderAbstract {
     const errorUrl = this.getEnvOrThrow('SEPAY_ERROR_URL');
     const cancelUrl = this.getEnvOrThrow('SEPAY_CANCEL_URL');
 
-
-
     const fields: Record<string, any> = {
-  merchant,
-  operation: 'PURCHASE',
-  payment_method: 'BANK_TRANSFER',          
-  order_amount: String(Math.round(total_prices)), 
-  currency: 'VND',
-  order_invoice_number: invoice,
-  order_description: `Thanh toan don hang ${invoice}`,
-  customer_id: userId ?? 'GUEST',
-  success_url: `${successUrl}?orderCode=${invoice}`,
-  error_url: `${errorUrl}?orderCode=${invoice}`,
-  cancel_url: `${cancelUrl}?orderCode=${invoice}`,
-};
+      merchant,
+      operation: 'PURCHASE',
+      payment_method: 'BANK_TRANSFER',
+      order_amount: String(Math.round(total_prices)),
+      currency: 'VND',
+      order_invoice_number: invoice,
+      order_description: `Thanh toan don hang ${invoice}`,
+      customer_id: userId ?? 'GUEST',
+      success_url: `${successUrl}?orderCode=${invoice}`,
+      error_url: `${errorUrl}?orderCode=${invoice}`,
+      cancel_url: `${cancelUrl}?orderCode=${invoice}`,
+    };
 
     const signature = sepaySignature(secretKey, fields);
     const checkoutUrl = `${baseUrl}/v1/checkout/init`;
@@ -141,19 +143,26 @@ export class OrderService implements OrderAbstract {
       if (type === 'ORDER_PAID' && amount >= 25000) {
         const payloadStr = invoice.split('INV-VIP-')[1]; // Get the part after prefix
         if (payloadStr) {
-           const lastDashIndex = payloadStr.lastIndexOf('-');
-           const userId = payloadStr.substring(0, lastDashIndex);
-           await this.userRepo.updateByUserId(userId, { isPremium: true } as any);
-           try {
-              const user = await this.userRepo.findByUserId(userId);
-              if (user && user.email) {
-                 const subject = 'Nâng cấp tài khoản VIP thành công';
-                 const html = `<p>Chào ${user.fullname},</p><p>Tài khoản của bạn đã được nâng cấp lên VIP thành công. Bạn hiện có thể đăng bài không giới hạn.</p>`;
-                 await this.mailService.sendMail(user.email, subject, html, MailType.UPGRADE_VIP);
-              }
-           } catch(e) {
-              console.error('Send VIP email failed', e);
-           }
+          const lastDashIndex = payloadStr.lastIndexOf('-');
+          const userId = payloadStr.substring(0, lastDashIndex);
+          await this.userRepo.updateByUserId(userId, {
+            isPremium: true,
+          } as any);
+          try {
+            const user = await this.userRepo.findByUserId(userId);
+            if (user && user.email) {
+              const subject = 'Nâng cấp tài khoản VIP thành công';
+              const html = `<p>Chào ${user.fullname},</p><p>Tài khoản của bạn đã được nâng cấp lên VIP thành công. Bạn hiện có thể đăng bài không giới hạn.</p>`;
+              await this.mailService.sendMail(
+                user.email,
+                subject,
+                html,
+                MailType.UPGRADE_VIP,
+              );
+            }
+          } catch (e) {
+            console.error('Send VIP email failed', e);
+          }
         }
       }
       return { success: true };
@@ -169,20 +178,24 @@ export class OrderService implements OrderAbstract {
     }
 
     if (type === 'ORDER_PAID') {
-      await this.repo.markPaid(invoice, body?.transaction?.transaction_id, body);
-  //      try {
-  //   const orderAfter = await this.repo.findByInvoice(invoice);
-  //   const to = orderAfter?.shipping?.email;
-  //   if (to) {
-  //     const subject = `Xác nhận đơn hàng ${invoice}`;
-  //     const html = orderPaidEmailHtml(orderAfter);
+      await this.repo.markPaid(
+        invoice,
+        body?.transaction?.transaction_id,
+        body,
+      );
+      //      try {
+      //   const orderAfter = await this.repo.findByInvoice(invoice);
+      //   const to = orderAfter?.shipping?.email;
+      //   if (to) {
+      //     const subject = `Xác nhận đơn hàng ${invoice}`;
+      //     const html = orderPaidEmailHtml(orderAfter);
 
-  //     await this.mailService.sendMail(to, subject, html, MailType.ORDER_PAID);
-  //     await this.repo.markEmailSent(invoice);
-  //   }
-  // } catch (e) {
-  //   console.error('Send paid email failed:', e);
-  // }
+      //     await this.mailService.sendMail(to, subject, html, MailType.ORDER_PAID);
+      //     await this.repo.markEmailSent(invoice);
+      //   }
+      // } catch (e) {
+      //   console.error('Send paid email failed:', e);
+      // }
     }
 
     return { success: true };
@@ -207,10 +220,18 @@ export class OrderService implements OrderAbstract {
         orderInvoiceNumber: order.sepay.orderInvoiceNumber,
         status: order.sepay.status,
         transactionId: order.sepay.transactionId,
-        paidAt: order.sepay.paidAt ? order.sepay.paidAt.toISOString() : undefined,
+        paidAt: order.sepay.paidAt
+          ? order.sepay.paidAt.toISOString()
+          : undefined,
       },
-      createdAt: order.createdAt ? order.createdAt.toISOString() : new Date().toISOString(),
-      updatedAt: order.updatedAt ? order.updatedAt.toISOString() : (order.createdAt ? order.createdAt.toISOString() : new Date().toISOString()),
+      createdAt: order.createdAt
+        ? order.createdAt.toISOString()
+        : new Date().toISOString(),
+      updatedAt: order.updatedAt
+        ? order.updatedAt.toISOString()
+        : order.createdAt
+          ? order.createdAt.toISOString()
+          : new Date().toISOString(),
     };
 
     return { success: true, data };

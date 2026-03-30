@@ -25,13 +25,15 @@ import { MailType } from 'src/schemas/mail.schema';
 import { UserRepoAbstract } from 'src/abstracts/repositories/user.repositories';
 
 @Injectable()
-export class AuthService implements AuthAbstract {
+export class AuthService extends AuthAbstract {
   constructor(
     private readonly userRepository: UserRepoAbstract,
     private readonly jwtService: JwtService,
     private readonly emailProducer: EmailProducer,
     private readonly bullMQ: BullMQService,
-  ) {}
+  ) {
+    super();
+  }
 
   async login(data: LoginDto): Promise<BaseResponseDto<LoginResponse>> {
     const user = await this.userRepository.findUserByEmail(data.email);

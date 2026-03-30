@@ -35,6 +35,28 @@ services:
       RABBITMQ_DEFAULT_PASS: password
     networks:
       - backend
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./src/observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - backend
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+    networks:
+      - backend
 networks:
   backend:
 

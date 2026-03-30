@@ -16,12 +16,14 @@ import { DeleteUserDto, PublicUserDto } from 'src/dtos/response/user.dto';
 import { UpdateUserDto } from 'src/dtos/request/user/update-user.dto';
 
 @Injectable()
-export class UserService implements UserAbstract {
+export class UserService extends UserAbstract {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
-  ) {}
+  ) {
+    super();
+  }
   async getAllUser(
     query: GetAllUserQueryDto,
   ): Promise<BaseResponseDto<PaginationResponse<PublicUserDto>>> {
@@ -37,15 +39,21 @@ export class UserService implements UserAbstract {
     if (searchTerm) {
       const createAsciiRegex = (str: string) => {
         return str
-          .replace(/[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬ]/g, '[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬ]')
+          .replace(
+            /[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬ]/g,
+            '[aAàÀảẢãÃáÁạẠăĂằẰẳẲẵẴắẮặẶâÂầẦẩẨẫẪấẤậẬ]',
+          )
           .replace(/[eEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆ]/g, '[eEèÈẻẺẽẼéÉẹẸêÊềỀểỂễỄếẾệỆ]')
           .replace(/[iIìÌỉỈĩĨíÍịỊ]/g, '[iIìÌỉỈĩĨíÍịỊ]')
-          .replace(/[oOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢ]/g, '[oOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢ]')
+          .replace(
+            /[oOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢ]/g,
+            '[oOòÒỏỎõÕóÓọỌôÔồỒổỔỗỖốỐộỘơƠờỜởỞỡỠớỚợỢ]',
+          )
           .replace(/[uUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰ]/g, '[uUùÙủỦũŨúÚụỤưƯừỪửỬữỮứỨựỰ]')
           .replace(/[yYỳỲỷỶỹỸýÝỵỴ]/g, '[yYỳỲỷỶỹỸýÝỵỴ]')
           .replace(/[dDđĐ]/g, '[dDđĐ]');
       };
-      
+
       const normalizedSearchTerm = createAsciiRegex(searchTerm.toLowerCase());
       match.fullname = { $regex: normalizedSearchTerm, $options: 'i' };
     }
@@ -53,7 +61,7 @@ export class UserService implements UserAbstract {
       const isActive = statusFilter === 'Active';
       match.$or = [
         { is_active: isActive },
-        { is_active: isActive ? 'true' : 'false' }
+        { is_active: isActive ? 'true' : 'false' },
       ];
     }
 
@@ -174,7 +182,9 @@ export class UserService implements UserAbstract {
         ...(dto.ava_img_url !== undefined
           ? { ava_img_url: dto.ava_img_url }
           : {}),
-        ...(dto.is_active !== undefined ? { is_active: dto.is_active === true || dto.is_active === 'true' } : {}),
+        ...(dto.is_active !== undefined
+          ? { is_active: dto.is_active === true || dto.is_active === 'true' }
+          : {}),
       });
 
       if (!updated) {
@@ -277,8 +287,8 @@ export class UserService implements UserAbstract {
       const fields: Record<string, any> = {
         merchant,
         operation: 'PURCHASE',
-        payment_method: 'BANK_TRANSFER',          
-        order_amount: String(upgradePrice), 
+        payment_method: 'BANK_TRANSFER',
+        order_amount: String(upgradePrice),
         currency: 'VND',
         order_invoice_number: invoice,
         order_description: `Nang cap VIP ${user.fullname}`,
@@ -296,7 +306,9 @@ export class UserService implements UserAbstract {
   ${Object.entries({ ...fields, signature })
     .map(([k, v]) => {
       const safeValue = String(v ?? '').replace(/"/g, '&quot;');
-      return '<input type="hidden" name="' + k + '" value="' + safeValue + '" />';
+      return (
+        '<input type="hidden" name="' + k + '" value="' + safeValue + '" />'
+      );
     })
     .join('\n')}
 </form>

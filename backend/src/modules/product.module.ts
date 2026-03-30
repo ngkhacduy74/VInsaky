@@ -15,6 +15,7 @@ import { UserService } from 'src/services/user.service';
 import { AuthModule } from './auth.module';
 import { PostService } from 'src/services/post.service';
 import { PostModule } from './post.module';
+import { ProductRepoAbstract } from 'src/abstracts/repositories/product.repositories';
 
 @Module({
   imports: [
@@ -28,6 +29,10 @@ import { PostModule } from './post.module';
     {
       provide: ProductAbstract,
       useClass: ProductService,
+    },
+    {
+      provide: ProductRepoAbstract,
+      useClass: ProductRepository,
     },
   ],
   exports: [ProductAbstract, ProductRepository],

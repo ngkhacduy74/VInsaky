@@ -22,7 +22,7 @@ export class MailService {
       subject,
       content: html,
       type,
-      status: MailStatus.SENT,
+      status: MailStatus.PENDING,
     });
     try {
       const transporter = nodemailer.createTransport({

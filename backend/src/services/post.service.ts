@@ -22,11 +22,13 @@ import { CreateCommentDto } from 'src/dtos/request/post/create-comment.dto';
 import { PostRepoAbstract } from 'src/abstracts/repositories/post.repositories';
 
 @Injectable()
-export class PostService implements PostAbstract {
+export class PostService extends PostAbstract {
   constructor(
     private readonly postRepository: PostRepoAbstract,
     private readonly userRepository: UserRepository,
-  ) {}
+  ) {
+    super();
+  }
 
   async createPost(
     data: CreatePostDto,
@@ -56,7 +58,7 @@ export class PostService implements PostAbstract {
 
       if (user.role !== 'Admin' && !user.isPremium) {
         await this.userRepository.updateByUserId(user_id, {
-          $inc: { postCount: 1 }
+          $inc: { postCount: 1 },
         } as any);
       }
 

@@ -26,6 +26,7 @@ import { MailModule } from './mail.module';
 import { RabbitMQModule } from './rabbitmq.module';
 import { BullMQModule } from './bullmq.module';
 import { BullModule } from '@nestjs/bullmq';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -35,6 +36,9 @@ import { BullModule } from '@nestjs/bullmq';
       useFactory: (config: ConfigService) => ({
         uri: config.get<string>('DB_URL'),
       }),
+    }),
+    PrometheusModule.register({
+      path: '/metrics',
     }),
     BullModule.forRoot({
       connection: {

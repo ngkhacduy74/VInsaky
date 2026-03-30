@@ -19,8 +19,10 @@ import { SearchProductsDto } from 'src/dtos/request/product/search-product.dto';
 import { ProductRepoAbstract } from 'src/abstracts/repositories/product.repositories';
 
 @Injectable()
-export class ProductService implements ProductAbstract {
-  constructor(private readonly productRepositories: ProductRepoAbstract) {}
+export class ProductService extends ProductAbstract {
+  constructor(private readonly productRepositories: ProductRepoAbstract) {
+    super();
+  }
   async createProduct(
     data: CreateProductDto,
   ): Promise<BaseResponseDto<ProductResponseDto>> {

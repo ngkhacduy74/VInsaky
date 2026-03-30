@@ -30,13 +30,13 @@ import { UserRepoAbstract } from 'src/abstracts/repositories/user.repositories';
     UserService,
     {
       provide: UserRepoAbstract,
-      useClass: UserRepository,   
+      useClass: UserRepository,
     },
     {
       provide: UserAbstract,
       useClass: UserService,
     },
   ],
-  exports: [UserAbstract, UserRepository],
+  exports: [UserAbstract, UserRepository, UserRepoAbstract, JwtModule],
 })
 export class UserModule {}
